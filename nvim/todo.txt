@@ -1,0 +1,7 @@
+terminal
+tabout
+nullLS?
+git?
+recent files?
+
+if slow check out impatient
