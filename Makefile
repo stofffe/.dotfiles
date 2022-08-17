@@ -1,4 +1,5 @@
 link:
-	ln -si ~/.dotfiles/zsh/.zshrc ~/.zshrc
-	ln -si ~/.dotfiles/nvim ~/.config/nvim
-	ln -si ~/.dotfiles/tmux/.tmux.config ~/.tmux.config
+	-ln -s ~/.dotfiles/zsh/.zshrc ~/.zshrc
+	-ln -s ~/.dotfiles/tmux/.tmux.config ~/.tmux.config
+	-[ -d "~/.config/nvim" ] && -ln -s ~/.dotfiles/nvim/ ~/.config/nvim # Check that folder does not exist first
+	@echo "Done" 
