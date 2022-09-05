@@ -3,9 +3,13 @@ if not status_ok then
     return
 end
 
+-- lsp
 require("user.lsp.lsp-installer")
 require("user.lsp.handlers").setup()
 
--- extra
+-- language specific plugins
 require("user.lsp.extra.go")
--- require("user.lsp.null-ls")
+require("user.lsp.extra.rust")
+
+-- null ls diagnostics and formatting
+require("user.lsp.null-ls")

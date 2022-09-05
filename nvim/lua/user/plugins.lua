@@ -23,13 +23,11 @@ vim.cmd [[
   augroup end
 ]]
 
--- Use a protected call so we don't error out on first use
+-- Use a protected call so we don"t error out on first use
 local status_ok, packer = pcall(require, "packer")
 if not status_ok then
     return
 end
-
-
 
 -- Have packer use a popup window
 packer.init {
@@ -50,16 +48,20 @@ return packer.startup(function(use)
     -- Small plugins
     use "windwp/nvim-autopairs" -- Auto completes pairs
     use "numToStr/Comment.nvim"
-    use { 'abecodes/tabout.nvim', requires = { 'nvim-treesitter' }, }
-    use { 'mg979/vim-visual-multi' }
+    use { "abecodes/tabout.nvim", requires = { "nvim-treesitter" }, }
+    use "mg979/vim-visual-multi"
+    use "kylechui/nvim-surround"
 
-    use { 'kyazdani42/nvim-tree.lua', requires = { 'kyazdani42/nvim-web-devicons', }, }
+    -- Terminal and file tree
+    use { "kyazdani42/nvim-tree.lua", requires = { "kyazdani42/nvim-web-devicons", }, }
     use "akinsho/toggleterm.nvim"
-    use "tpope/vim-surround"
 
     -- Golang
-    use 'ray-x/go.nvim'
-    use 'ray-x/guihua.lua'
+    use "ray-x/go.nvim"
+    use "ray-x/guihua.lua"
+
+    -- Rust
+    use "simrat39/rust-tools.nvim"
 
     -- Colorscheme
     use "joshdick/onedark.vim"
@@ -78,9 +80,6 @@ return packer.startup(function(use)
     use "hrsh7th/cmp-nvim-lua"
     use "hrsh7th/cmp-nvim-lsp-signature-help"
 
-    -- Null-ls
-    use "jose-elias-alvarez/null-ls.nvim"
-
     -- Snippets
     use "L3MON4D3/LuaSnip" --snippet engine
     use "rafamadriz/friendly-snippets" -- a bunch of snippets to use
@@ -88,9 +87,11 @@ return packer.startup(function(use)
     -- LSP
     use "neovim/nvim-lspconfig" -- enable LSP
     use "williamboman/nvim-lsp-installer" -- simple to use language server installer
+    use "jose-elias-alvarez/null-ls.nvim" -- complementary diagnostics and formatters
 
     -- Telescope
-    use { 'nvim-telescope/telescope.nvim', requires = { { 'nvim-lua/plenary.nvim' } } }
+    use { "nvim-telescope/telescope.nvim", requires = { { "nvim-lua/plenary.nvim" } } }
+    --[[ use "nvim-telescope/telescope-media-files.nvim" ]]
 
     -- Treesitter
     use { "nvim-treesitter/nvim-treesitter", run = ":TSUpdate", }

@@ -62,3 +62,5 @@ keymap(n, "<C-p><C-v>", '<cmd>ToggleTerm direction=vertical size=100<CR>', opts)
 
 -- Nvim-Tree
 keymap(n, "<leader>e", ":NvimTreeToggle<CR>:NvimTreeRefresh<CR>", opts) -- Refresh and toggle
+
+-- Rust

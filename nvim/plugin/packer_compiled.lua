@@ -164,6 +164,11 @@ _G.packer_plugins = {
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/nvim-lspconfig",
     url = "https://github.com/neovim/nvim-lspconfig"
   },
+  ["nvim-surround"] = {
+    loaded = true,
+    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/nvim-surround",
+    url = "https://github.com/kylechui/nvim-surround"
+  },
   ["nvim-tree.lua"] = {
     loaded = true,
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/nvim-tree.lua",
@@ -209,6 +214,11 @@ _G.packer_plugins = {
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/popup.nvim",
     url = "https://github.com/nvim-lua/popup.nvim"
   },
+  ["rust-tools.nvim"] = {
+    loaded = true,
+    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/rust-tools.nvim",
+    url = "https://github.com/simrat39/rust-tools.nvim"
+  },
   ["solarized.nvim"] = {
     loaded = true,
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/solarized.nvim",
@@ -228,11 +238,6 @@ _G.packer_plugins = {
     loaded = true,
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/toggleterm.nvim",
     url = "https://github.com/akinsho/toggleterm.nvim"
-  },
-  ["vim-surround"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/vim-surround",
-    url = "https://github.com/tpope/vim-surround"
   },
   ["vim-visual-multi"] = {
     loaded = true,
