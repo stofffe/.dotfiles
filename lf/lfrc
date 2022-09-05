@@ -1,0 +1,20 @@
+# Basic Settings
+set ignorecase true
+set hidden true
+set preview true
+
+cmd mkfile ${{
+  printf "File Name: "
+  read ans
+  $EDITOR $ans
+}}
+
+cmd mkdir ${{
+  printf "Dir Name: "
+  read ans
+  mkdir $ans
+}}
+
+map m
+map mf mkfile
+map md mkdir
