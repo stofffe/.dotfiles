@@ -30,6 +30,8 @@ _comp_options+=(globdots)		# Include hidden files.
 # bindkey -M viins 'jk' a
 # bindkey -v '^?' backward-delete-char
 
+# LF
+export EDITOR="nvim"
 lfcd () {
     tmp="$(mktemp)"
     lf -last-dir-path="$tmp" "$@"
@@ -66,9 +68,12 @@ alias tmls='tmux ls'
 alias tmk='f() { tmux kill-session -t $1 };f'
 
 # Source
-source ~/.config/zsh/powerlevel10k/powerlevel10k.zsh-theme
-source ~/.config/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# source ~/.config/zsh/powerlevel10k/powerlevel10k.zsh-theme
+# source ~/.config/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+# source ~/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/.dotfiles/zsh/powerlevel10k/powerlevel10k.zsh-theme
+source ~/.dotfiles/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ~/.dotfiles/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -81,3 +86,5 @@ source ~/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 ### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
 export PATH="/Users/christofferandersson/.rd/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
