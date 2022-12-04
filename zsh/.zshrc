@@ -52,7 +52,7 @@ alias cdd="cd .."
 
 # Git
 alias gs='git status'
-alias gc='f() { git commit -m "$1" };f'
+alias gc='f() { git commit -m $1 };f'
 alias gp='git push'
 
 # TMUX aliases
