@@ -17,19 +17,6 @@ zmodload zsh/complist
 compinit
 _comp_options+=(globdots)		# Include hidden files.
 
-# vi mode
-#bindkey -v
-#export KEYTIMEOUT=1
-
-# Use vim keys in tab complete menu:
-#bindkey -M menuselect 'h' vi-backward-char
-#bindkey -M menuselect 'k' vi-up-line-or-history
-#bindkey -M menuselect 'l' vi-forward-char
-#bindkey -M menuselect 'j' vi-down-line-or-history
-# bindkey -M viins "jk" vi-cmd-mode
-# bindkey -M viins 'jk' a
-# bindkey -v '^?' backward-delete-char
-
 # LF
 export EDITOR="nvim"
 lfcd () {
@@ -56,10 +43,9 @@ export GOBIN=$GOPATH/bin
 export PATH=$PATH:$HOME/.pub-cache/bin
 
 # Aliases
-alias gitm="open https://github.com/stoffand"
+alias repos="open https://github.com/stofffe?tab=repositories"
 alias nv=nvim
 alias ll="ls -lah"
-alias cl=clear
 alias cl=clear
 alias cdd="cd .."
 # alias example='f() { echo Your arg was $1. };f'
@@ -72,9 +58,6 @@ alias tmls='tmux ls'
 alias tmk='f() { tmux kill-session -t $1 };f'
 
 # Source
-# source ~/.config/zsh/powerlevel10k/powerlevel10k.zsh-theme
-# source ~/.config/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-# source ~/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.dotfiles/zsh/powerlevel10k/powerlevel10k.zsh-theme
 source ~/.dotfiles/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.dotfiles/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -82,13 +65,9 @@ source ~/.dotfiles/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.z
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# ---------- OWN -----------
-# grpc Go
-# export PATH="$PATH:$(go env GOPATH)/bin"
 
-
-### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
-export PATH="/Users/christofferandersson/.rd/bin:$PATH"
-### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+# ### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+# export PATH="/Users/christofferandersson/.rd/bin:$PATH"
+# ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
+# test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
