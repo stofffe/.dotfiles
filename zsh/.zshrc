@@ -50,12 +50,21 @@ alias cl=clear
 alias cdd="cd .."
 # alias example='f() { echo Your arg was $1. };f'
 
+# Git
+alias gs='git status'
+alias gc='f() { git commit -m "$1" };f'
+alias gp='git push'
+
 # TMUX aliases
 alias tmn='f() { tmux new -s $1 };f'
 alias tma='f() { tmux attach -t $1 };f'
 alias tms='tmux source-file ~/.tmux.config'
 alias tmls='tmux ls'
 alias tmk='f() { tmux kill-session -t $1 };f'
+
+# fzf
+export FZF_DEFAULT_COMMAND='fd --type f --hidden'
+alias ff='cd $(fd --type directory --hidden --search-path=$HOME/dev --search-path=$HOME/.dotfiles | fzf)'
 
 # Source
 source ~/.dotfiles/zsh/powerlevel10k/powerlevel10k.zsh-theme
