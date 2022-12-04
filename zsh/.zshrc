@@ -60,7 +60,11 @@ alias gitm="open https://github.com/stoffand"
 alias nv=nvim
 alias ll="ls -lah"
 alias cl=clear
-alias example='f() { echo Your arg was $1. };f'
+alias cl=clear
+alias cdd="cd .."
+# alias example='f() { echo Your arg was $1. };f'
+
+# TMUX aliases
 alias tmn='f() { tmux new -s $1 };f'
 alias tma='f() { tmux attach -t $1 };f'
 alias tms='tmux source-file ~/.tmux.config'

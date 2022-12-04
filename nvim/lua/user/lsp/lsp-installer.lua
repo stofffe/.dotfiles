@@ -3,7 +3,7 @@ if not status_ok then
     return
 end
 
-local allowed = { "rust_analyzer", "jsonls", "sumneko_lua", "svelte", "gopls" }
+local allowed = { "rust_analyzer", "jsonls", "sumneko_lua", "svelte", "gopls", "jdtls" }
 
 -- Register a handler that will be called for all installed servers.
 -- Alternatively, you may also register handlers on specific server instances instead (see example below).
