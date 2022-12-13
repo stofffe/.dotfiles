@@ -30,12 +30,15 @@ telescope.setup {
             ["<C-u>"] = actions.preview_scrolling_up,
             ["<C-d>"] = actions.preview_scrolling_down,
 
-            -- ["<Tab>"] = actions.toggle_selection + actions.move_selection_worse,
-            -- ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_better,
+            ["<Tab>"] = actions.toggle_selection + actions.move_selection_worse,
+            ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_better,
+            ['<C-q>'] = actions.smart_add_to_qflist + actions.open_qflist,
+            ["<C-_>"] = actions.which_key, -- keys from pressing <C-/>
+
             -- ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
             -- ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+            -- ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
             -- ["<C-l>"] = actions.complete_tag,
-            -- ["<C-_>"] = actions.which_key, -- keys from pressing <C-/>
         }, n = {
             ["<leader>p"] = actions.close,
             ["<Esc>"] = actions.close,
@@ -52,6 +55,8 @@ telescope.setup {
             ["<C-d>"] = actions.preview_scrolling_down,
 
             ["?"] = actions.which_key,
+
+            ['<leader>ca'] = actions.smart_add_to_qflist + actions.open_qflist, -- Send selected to qflist
 
             -- ["<Tab>"] = actions.toggle_selection + actions.move_selection_worse,
             -- ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_better,

@@ -25,6 +25,14 @@ keymap(i, "<C-f>", "<cmd>GoFillStruct<CR>", opts)
 keymap(v, "<Leader>y", '"*y', opts)
 keymap(V, "<Leader>y", '"*y', opts)
 
+-- Quickfix
+keymap(i, "<leader>cn", "<cmd>cnext<CR>", opts)
+keymap(n, "<leader>cn", "<cmd>cnext<CR>", opts)
+keymap(i, "<leader>cp", "<cmd>cprevious<CR>", opts)
+keymap(n, "<leader>cp", "<cmd>cprevious<CR>", opts)
+keymap(i, "<leader>cr", "<cmd>call setqflist([])<CR>", opts)
+keymap(n, "<leader>cr", "<cmd>call setqflist([])<CR>", opts)
+
 -- Normal --
 -- Format and save
 keymap(n, "<leader>f", ":Format<cr>", opts)
