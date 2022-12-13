@@ -43,17 +43,11 @@ export GOBIN=$GOPATH/bin
 export PATH=$PATH:$HOME/.pub-cache/bin
 
 # Aliases
-alias repos="open https://github.com/stofffe?tab=repositories"
+alias repo='f() { open https://github.com/$1 };f'
 alias nv=nvim
 alias ll="ls -lah"
 alias cl=clear
-alias cdd="cd .."
 # alias example='f() { echo Your arg was $1. };f'
-
-# Git
-alias gs='git status'
-alias gc='f() { git commit -m $1 };f'
-alias gp='git push'
 
 # TMUX aliases
 alias tmn='f() { tmux new -s $1 };f'
@@ -64,7 +58,7 @@ alias tmk='f() { tmux kill-session -t $1 };f'
 
 # fzf
 export FZF_DEFAULT_COMMAND='fd --type f --hidden'
-alias ff='cd $(fd --type directory --hidden --search-path=$HOME/dev --search-path=$HOME/.dotfiles | fzf)'
+alias ff='cd $(fd --type directory --hidden --search-path=$HOME/dev --search-path=$HOME/.dotfiles --search-path=$HOME/kth | fzf)'
 
 # Source
 source ~/.dotfiles/zsh/powerlevel10k/powerlevel10k.zsh-theme
