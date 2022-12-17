@@ -1,6 +1,6 @@
 local o = vim.opt
 
-o.relativenumber = true
+o.relativenumber = false
 o.number = true
 o.hlsearch = false
 o.hidden = true
@@ -22,5 +22,3 @@ o.updatetime = 300
 
 o.swapfile = false
 o.backup = false
---o.undodir = '$HOME/.vim/undodir'
---o.undofile = true

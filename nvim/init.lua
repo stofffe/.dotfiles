@@ -1,13 +1,5 @@
-require "user.options"
-require "user.keymaps"
-require "user.plugins"
-require "user.colorscheme"
-require "user.cmp"
-require "user.lsp"
-require "user.telescope"
-require "user.treesitter"
-require "user.autopairs"
-require "user.comment"
-require "user.nvim-tree"
---[[ require "user.toggleterm" ]]
---[[ require "user.tabout" ]]
+require("stofffe")
+
+-- Allow after/plugins to be used in "require"
+local home_dir = os.getenv("HOME")
+package.path = home_dir .. "/.config/nvim/after/plugin/?.lua;" .. package.path

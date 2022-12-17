@@ -2,7 +2,7 @@ return {
     settings = {
         Lua = {
             diagnostics = {
-                globals = { "vim" },
+                globals = { "vim" }
             },
             workspace = {
                 library = {
@@ -10,6 +10,6 @@ return {
                     [vim.fn.stdpath("config") .. "/lua"] = true,
                 },
             },
-        },
-    },
+        }
+    }
 }

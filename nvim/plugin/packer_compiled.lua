@@ -89,20 +89,10 @@ _G.packer_plugins = {
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/cmp-buffer",
     url = "https://github.com/hrsh7th/cmp-buffer"
   },
-  ["cmp-cmdline"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/cmp-cmdline",
-    url = "https://github.com/hrsh7th/cmp-cmdline"
-  },
   ["cmp-nvim-lsp"] = {
     loaded = true,
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/cmp-nvim-lsp",
     url = "https://github.com/hrsh7th/cmp-nvim-lsp"
-  },
-  ["cmp-nvim-lsp-signature-help"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/cmp-nvim-lsp-signature-help",
-    url = "https://github.com/hrsh7th/cmp-nvim-lsp-signature-help"
   },
   ["cmp-nvim-lua"] = {
     loaded = true,
@@ -129,25 +119,20 @@ _G.packer_plugins = {
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/friendly-snippets",
     url = "https://github.com/rafamadriz/friendly-snippets"
   },
-  ["go.nvim"] = {
+  ["lsp-zero.nvim"] = {
     loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/go.nvim",
-    url = "https://github.com/ray-x/go.nvim"
+    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/lsp-zero.nvim",
+    url = "https://github.com/VonHeikemen/lsp-zero.nvim"
   },
-  gruvbox = {
+  ["mason-lspconfig.nvim"] = {
     loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/gruvbox",
-    url = "https://github.com/morhetz/gruvbox"
+    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/mason-lspconfig.nvim",
+    url = "https://github.com/williamboman/mason-lspconfig.nvim"
   },
-  ["guihua.lua"] = {
+  ["mason.nvim"] = {
     loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/guihua.lua",
-    url = "https://github.com/ray-x/guihua.lua"
-  },
-  ["null-ls.nvim"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/null-ls.nvim",
-    url = "https://github.com/jose-elias-alvarez/null-ls.nvim"
+    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/mason.nvim",
+    url = "https://github.com/williamboman/mason.nvim"
   },
   ["nvim-autopairs"] = {
     loaded = true,
@@ -159,95 +144,30 @@ _G.packer_plugins = {
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/nvim-cmp",
     url = "https://github.com/hrsh7th/nvim-cmp"
   },
-  ["nvim-lsp-installer"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/nvim-lsp-installer",
-    url = "https://github.com/williamboman/nvim-lsp-installer"
-  },
   ["nvim-lspconfig"] = {
     loaded = true,
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/nvim-lspconfig",
     url = "https://github.com/neovim/nvim-lspconfig"
-  },
-  ["nvim-surround"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/nvim-surround",
-    url = "https://github.com/kylechui/nvim-surround"
-  },
-  ["nvim-tree.lua"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/nvim-tree.lua",
-    url = "https://github.com/kyazdani42/nvim-tree.lua"
   },
   ["nvim-treesitter"] = {
     loaded = true,
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/nvim-treesitter",
     url = "https://github.com/nvim-treesitter/nvim-treesitter"
   },
-  ["nvim-ts-context-commentstring"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/nvim-ts-context-commentstring",
-    url = "https://github.com/JoosepAlviste/nvim-ts-context-commentstring"
-  },
-  ["nvim-web-devicons"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/nvim-web-devicons",
-    url = "https://github.com/kyazdani42/nvim-web-devicons"
-  },
-  ["onedark.vim"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/onedark.vim",
-    url = "https://github.com/joshdick/onedark.vim"
-  },
   ["packer.nvim"] = {
     loaded = true,
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/packer.nvim",
     url = "https://github.com/wbthomason/packer.nvim"
-  },
-  ["papercolor-theme"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/papercolor-theme",
-    url = "https://github.com/NLKNguyen/papercolor-theme"
   },
   ["plenary.nvim"] = {
     loaded = true,
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/plenary.nvim",
     url = "https://github.com/nvim-lua/plenary.nvim"
   },
-  ["popup.nvim"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/popup.nvim",
-    url = "https://github.com/nvim-lua/popup.nvim"
-  },
-  ["rust-tools.nvim"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/rust-tools.nvim",
-    url = "https://github.com/simrat39/rust-tools.nvim"
-  },
-  ["solarized.nvim"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/solarized.nvim",
-    url = "https://github.com/shaunsingh/solarized.nvim"
-  },
-  ["tabout.nvim"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/tabout.nvim",
-    url = "https://github.com/abecodes/tabout.nvim"
-  },
   ["telescope.nvim"] = {
     loaded = true,
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/telescope.nvim",
     url = "https://github.com/nvim-telescope/telescope.nvim"
-  },
-  ["toggleterm.nvim"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/toggleterm.nvim",
-    url = "https://github.com/akinsho/toggleterm.nvim"
-  },
-  ["vim-visual-multi"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/vim-visual-multi",
-    url = "https://github.com/mg979/vim-visual-multi"
   }
 }
 
