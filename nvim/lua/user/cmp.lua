@@ -1,10 +1,14 @@
-local cmp_status_ok, cmp = pcall(require, "cmp")
-if not cmp_status_ok then
+local req = "cmp"
+local ok, cmp = pcall(require, req)
+if not ok then
+    print("could not find require \"" .. req .. "\"")
     return
 end
 
-local snip_status_ok, luasnip = pcall(require, "luasnip")
-if not snip_status_ok then
+local req = "luasnip"
+local ok, luasnip = pcall(require, req)
+if not ok then
+    print("could not find require \"" .. req .. "\"")
     return
 end
 
@@ -17,31 +21,10 @@ end
 
 --   פּ ﯟ   some other good icons
 local kind_icons = {
-    Text = "",
-    Method = "m",
-    Function = "",
-    Constructor = "",
-    Field = "",
-    Variable = "",
-    Class = "",
-    Interface = "",
-    Module = "",
-    Property = "",
-    Unit = "",
-    Value = "",
-    Enum = "",
-    Keyword = "",
-    Snippet = "",
-    Color = "",
-    File = "",
-    Reference = "",
-    Folder = "",
-    EnumMember = "",
-    Constant = "",
-    Struct = "",
-    Event = "",
-    Operator = "",
-    TypeParameter = "",
+    Text = "", Method = "m", Function = "", Constructor = "", Field = "", Variable = "", Class = "",
+    Interface = "", Module = "", Property = "", Unit = "", Value = "", Enum = "", Keyword = "",
+    Snippet = "", Color = "", File = "", Reference = "", Folder = "", EnumMember = "", Constant = "",
+    Struct = "", Event = "", Operator = "", TypeParameter = ""
 }
 -- find more here: https://www.nerdfonts.com/cheat-sheet
 
@@ -56,7 +39,6 @@ cmp.setup {
         ["<C-j>"] = cmp.mapping.select_next_item(),
         ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
         ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
-        ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
         ["<C-y>"] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
         ["<C-d>"] = cmp.mapping { -- TODO  change back to <C-e>?
             i = cmp.mapping.abort(),
@@ -66,16 +48,11 @@ cmp.setup {
         -- Set `select` to `false` to only confirm explicitly selected items.
         ["<CR>"] = cmp.mapping.confirm { select = true },
         ["<Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-                cmp.select_next_item()
-            elseif luasnip.expandable() then
-                luasnip.expand()
-            elseif luasnip.expand_or_jumpable() then
-                luasnip.expand_or_jump()
-            elseif check_backspace() then
-                fallback()
-            else
-                fallback()
+            if cmp.visible() then cmp.select_next_item()
+            elseif luasnip.expandable() then luasnip.expand()
+            elseif luasnip.expand_or_jumpable() then luasnip.expand_or_jump()
+            elseif check_backspace() then fallback()
+            else fallback()
             end
         end, {
             "i",

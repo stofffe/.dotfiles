@@ -1,5 +1,7 @@
-local status_ok, comment = pcall(require, "Comment")
-if not status_ok then
+local req = "Comment"
+local ok, comment = pcall(require, req)
+if not ok then
+    print("could not find require \"" .. req .. "\"")
     return
 end
 
