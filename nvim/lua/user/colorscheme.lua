@@ -17,12 +17,10 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     end
 })
 
-vim.cmd [[
-try
-  colorscheme darkplus
-catch /^Vim\%((\a\+)\)\=:E185/
-  colorscheme default
-  set background=dark
-endtry
-]]
---
+-- Set default colorscheme
+function DefautlColorScheme(color)
+    color = color or "darkplus"
+    vim.cmd.colorscheme(color)
+end
+
+DefautlColorScheme()

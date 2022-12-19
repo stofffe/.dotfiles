@@ -1,9 +1,6 @@
 local req = "nvim-autopairs"
 local ok, npairs = pcall(require, req)
-if not ok then
-    print("could not find require \"" .. req .. "\"")
-    return
-end
+if not ok then print("could not find require \"" .. req .. "\"") return end
 
 npairs.setup {
     check_ts = true,

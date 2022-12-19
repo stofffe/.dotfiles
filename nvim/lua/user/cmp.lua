@@ -1,16 +1,10 @@
 local req = "cmp"
 local ok, cmp = pcall(require, req)
-if not ok then
-    print("could not find require \"" .. req .. "\"")
-    return
-end
+if not ok then print("could not find require \"" .. req .. "\"") return end
 
 local req = "luasnip"
 local ok, luasnip = pcall(require, req)
-if not ok then
-    print("could not find require \"" .. req .. "\"")
-    return
-end
+if not ok then print("could not find require \"" .. req .. "\"") return end
 
 require("luasnip/loaders/from_vscode").lazy_load()
 

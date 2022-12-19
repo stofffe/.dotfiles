@@ -1,9 +1,6 @@
 local req = "Comment"
 local ok, comment = pcall(require, req)
-if not ok then
-    print("could not find require \"" .. req .. "\"")
-    return
-end
+if not ok then print("could not find require \"" .. req .. "\"") return end
 
 comment.setup {
     pre_hook = function(ctx)

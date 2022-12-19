@@ -1,6 +1,5 @@
-local status_ok, surround = pcall(require, "nvim-surround")
-if not status_ok then
-    return
-end
+local req = "nvim-surround"
+local ok, surround = pcall(require, req)
+if not ok then print("could not find require \"" .. req .. "\"") return end
 
 surround.setup({})

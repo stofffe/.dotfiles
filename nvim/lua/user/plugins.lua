@@ -15,18 +15,14 @@ if fn.empty(fn.glob(install_path)) > 0 then
     vim.cmd [[packadd packer.nvim]]
 end
 
--- Use a protected call so we don"t error out on first use
-local status_ok, packer = pcall(require, "packer")
-if not status_ok then
-    return
-end
+local req = "packer"
+local ok, packer = pcall(require, req)
+if not ok then print("could not find require \"" .. req .. "\"") return end
 
 -- Have packer use a popup window
 packer.init {
     display = {
-        open_fn = function()
-            return require("packer.util").float { border = "rounded" }
-        end,
+        open_fn = function() return require("packer.util").float({ border = "rounded" }) end,
     },
 }
 
@@ -40,20 +36,8 @@ return packer.startup(function(use)
     -- Small plugins
     use "windwp/nvim-autopairs" -- Auto completes pairs
     use "numToStr/Comment.nvim"
-    use { "abecodes/tabout.nvim", requires = { "nvim-treesitter" }, }
     use "mg979/vim-visual-multi"
     use "kylechui/nvim-surround"
-
-    -- Terminal and file tree
-    use { "kyazdani42/nvim-tree.lua", requires = { "kyazdani42/nvim-web-devicons", }, }
-    use "akinsho/toggleterm.nvim"
-
-    -- Golang
-    use "ray-x/go.nvim"
-    use "ray-x/guihua.lua"
-
-    -- Rust
-    use "simrat39/rust-tools.nvim"
 
     -- Colorscheme
     use "joshdick/onedark.vim"
@@ -61,6 +45,16 @@ return packer.startup(function(use)
     use "morhetz/gruvbox"
     use "NLKNguyen/papercolor-theme"
     use "shaunsingh/solarized.nvim"
+
+    -- Telescope
+    use { "nvim-telescope/telescope.nvim", requires = { { "nvim-lua/plenary.nvim" } } }
+
+    -- Terminal and file tree
+    use { "kyazdani42/nvim-tree.lua", requires = { "kyazdani42/nvim-web-devicons", }, }
+
+    -- Treesitter
+    use { "nvim-treesitter/nvim-treesitter", run = ":TSUpdate", }
+    use "JoosepAlviste/nvim-ts-context-commentstring"
 
     -- Cmp
     use "hrsh7th/nvim-cmp" -- The completion plugin
@@ -81,13 +75,13 @@ return packer.startup(function(use)
     use "williamboman/nvim-lsp-installer" -- simple to use language server installer
     use "jose-elias-alvarez/null-ls.nvim" -- complementary diagnostics and formatters
 
-    -- Telescope
-    use { "nvim-telescope/telescope.nvim", requires = { { "nvim-lua/plenary.nvim" } } }
-    --[[ use "nvim-telescope/telescope-media-files.nvim" ]]
+    -- Golang
+    use "ray-x/go.nvim"
+    use "ray-x/guihua.lua"
 
-    -- Treesitter
-    use { "nvim-treesitter/nvim-treesitter", run = ":TSUpdate", }
-    use "JoosepAlviste/nvim-ts-context-commentstring"
+    -- Rust
+    use "simrat39/rust-tools.nvim"
+
 
     -- Automatically set up your configuration after cloning packer.nvim
     -- Put this at the end after all plugins

@@ -1,7 +1,6 @@
-local status_ok, _ = pcall(require, "lspconfig")
-if not status_ok then
-    return
-end
+local req = "lspconfig"
+local ok, _ = pcall(require, req)
+if not ok then print("could not find require \"" .. req .. "\"") return end
 
 -- lsp
 require("user.lsp.lsp-installer")

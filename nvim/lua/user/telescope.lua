@@ -1,11 +1,19 @@
-local status_ok, telescope = pcall(require, "telescope")
-if not status_ok then
-    return
-end
+local req = "telescope"
+local ok, telescope = pcall(require, req)
+if not ok then print("could not find require \"" .. req .. "\"") return end
 
-local actions = require "telescope.actions"
+-- Maps
+local keymap = vim.api.nvim_set_keymap
+local opts = { noremap = true, silent = true }
+keymap('n', "<leader>p",
+    "<cmd>lua require'telescope.builtin'.find_files(require('telescope.themes').get_dropdown({ previewer = false }))<CR>"
+    , opts)
+keymap('n', "<leader>P", "<cmd>lua require'telescope.builtin'.find_files()<CR>", opts)
+keymap('n', "<leader>g", "<cmd>Telescope live_grep<CR>", opts)
+keymap('n', "<leader>m", "<cmd>Telescope treesitter<CR>", opts)
 
-
+-- Setup
+local actions = require("telescope.actions")
 telescope.setup {
     defaults = {
 
@@ -34,11 +42,6 @@ telescope.setup {
             ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_better,
             ['<C-q>'] = actions.smart_add_to_qflist + actions.open_qflist,
             ["<C-_>"] = actions.which_key, -- keys from pressing <C-/>
-
-            -- ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
-            -- ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
-            -- ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
-            -- ["<C-l>"] = actions.complete_tag,
         }, n = {
             ["<leader>p"] = actions.close,
             ["<Esc>"] = actions.close,
@@ -58,41 +61,11 @@ telescope.setup {
 
             ['<leader>ca'] = actions.smart_add_to_qflist + actions.open_qflist, -- Send selected to qflist
 
-            -- ["<Tab>"] = actions.toggle_selection + actions.move_selection_worse,
-            -- ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_better,
-            -- ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
-            -- ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
-
-            -- ["j"] = actions.move_selection_next,
-            -- ["k"] = actions.move_selection_previous,
-            -- ["H"] = actions.move_to_top,
-            -- ["M"] = actions.move_to_middle,
-            -- ["L"] = actions.move_to_bottom,
-
-            -- ["<Down>"] = actions.move_selection_next,
-            -- ["<Up>"] = actions.move_selection_previous,
-        },
-        },
-    },
-    pickers = {
-        -- Default configuration for builtin pickers goes here:
-        -- picker_name = {
-        --   picker_config_key = value,
-        --   ...
-        -- }
-        -- Now the picker_config_key will be applied every time you call this
-        -- builtin picker
-    },
-    extensions = {
+        } },
     },
 }
 
--- Uberzug not supported on macos
--- Enable previewing media files
---[[ telescope.load_extension('media_files') ]]
--- media_files = {
--- -- filetypes whitelist
--- -- defaults to {"png", "jpg", "mp4", "webm", "pdf"}
---[[     filetypes = { "png", "webp", "jpg", "jpeg" }, ]]
---[[     find_cmd = "rg" -- find command (defaults to `fd`) ]]
---[[ }, ]]
+-- ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
+-- ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+-- ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+-- ["<C-l>"] = actions.complete_tag,

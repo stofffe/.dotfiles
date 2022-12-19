@@ -1,7 +1,13 @@
-local M = {}
+local capabilities = vim.lsp.protocol.make_client_capabilities()
 
--- TODO: backfill this to template
-M.setup = function()
+local req = "cmp_nvim_lsp"
+local ok, cmp_nvim_lsp = pcall(require, req)
+if not ok then print("could not find require \"" .. req .. "\"") return end
+cmp_nvim_lsp.setup {
+    capabilities = capabilities,
+}
+
+local setup = function()
     local signs = {
         { name = "DiagnosticSignError", text = "" },
         { name = "DiagnosticSignWarn", text = "" },
@@ -14,12 +20,8 @@ M.setup = function()
     end
 
     local config = {
-        -- disable virtual text
         virtual_text = false,
-        -- show signs
-        signs = {
-            active = signs,
-        },
+        signs = { active = signs, },
         update_in_insert = true,
         underline = true,
         severity_sort = true,
@@ -32,32 +34,13 @@ M.setup = function()
             prefix = "",
         },
     }
-
     vim.diagnostic.config(config)
-
     vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
         border = "rounded",
     })
-
     vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
         border = "rounded",
     })
-end
-
-local function lsp_highlight_document(client)
-    -- Set autocommands conditional on server_capabilities
-    if client.server_capabilities.document_highlight then
-        vim.api.nvim_exec(
-            [[
-      augroup lsp_document_highlight
-        autocmd! * <buffer>
-        autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-        autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-      augroup END
-    ]]       ,
-            false
-        )
-    end
 end
 
 local function lsp_keymaps(bufnr)
@@ -74,16 +57,29 @@ local function lsp_keymaps(bufnr)
     vim.api.nvim_buf_set_keymap(bufnr, "n", "]d", '<cmd>lua vim.diagnostic.goto_next({ border = "rounded" })<CR>', opts)
     vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>t",
         "<cmd>lua vim.diagnostic.config({virtual_text = not vim.diagnostic.config().virtual_text})<CR>", opts) -- toggle virtual text
-    -- vim.api.nvim_buf_set_keymap(bufnr, "n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
-    -- vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>q", "<cmd>lua vim.diagnostic.setloclist()<CR>", opts)
-    -- vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>f", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
-    vim.cmd [[ command! Format execute 'lua vim.lsp.buf.format()' ]]
 end
 
--- Auto format
-vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.formatting_sync()]]
+-- Add document highlight if filetype supports it
+local function lsp_highlight_document(client)
+    local file_suffix = vim.fn.expand("%"):match("%.(.+)") -- get suffix
+    -- Set autocommands conditional on server_capabilities
+    if client.server_capabilities.documentHighlightProvider then
+        local cursorHightlightGroup = vim.api.nvim_create_augroup("lsp_document_hightlight", { clear = false })
+        vim.api.nvim_create_autocmd("CursorHold", {
+            pattern = { "*." .. file_suffix },
+            callback = function() vim.lsp.buf.document_highlight() end,
+            group = cursorHightlightGroup
+        })
+        vim.api.nvim_create_autocmd("CursorMoved", {
+            pattern = { "*." .. file_suffix },
+            callback = function() vim.lsp.buf.clear_references() end,
+            group = cursorHightlightGroup,
+        })
+    end
+end
 
-M.on_attach = function(client, bufnr)
+-- On attach
+local on_attach = function(client, bufnr)
     if client.name == "html" then
         client.server_capabilities.document_formatting = false
     end
@@ -94,15 +90,35 @@ M.on_attach = function(client, bufnr)
     lsp_highlight_document(client)
 end
 
-local capabilities = vim.lsp.protocol.make_client_capabilities()
+-- Format command
+vim.api.nvim_create_user_command("Format", function()
+    vim.lsp.buf.format()
+end, {})
 
-local status_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
-if not status_ok then
-    return
-end
+-- Auto format on save
+local autoFormatGroup = vim.api.nvim_create_augroup("lsp_document_hightlight", { clear = false })
+local autoFormatId = vim.api.nvim_create_autocmd("BufWritePre", {
+    command = "silent! lua vim.lsp.buf.formatting_sync()",
+    group = autoFormatGroup,
+})
+vim.api.nvim_create_user_command("DisableAutoFormat", function()
+    vim.api.nvim_del_autocmd(autoFormatId)
+end, {})
+vim.api.nvim_create_user_command("EnableAutoFormat", function()
+    autoFormatId = vim.api.nvim_create_autocmd("BufWritePre", {
+        command = "silent! lua vim.lsp.buf.formatting_sync()",
+        group = autoFormatGroup,
+    })
+end, {})
 
-cmp_nvim_lsp.setup {
-    capabilities = capabilities,
+return {
+    setup = setup,
+    on_attach = on_attach,
 }
 
-return M
+
+
+
+-- vim.api.nvim_buf_set_keymap(bufnr, "n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
+-- vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>q", "<cmd>lua vim.diagnostic.setloclist()<CR>", opts)
+-- vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>f", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)

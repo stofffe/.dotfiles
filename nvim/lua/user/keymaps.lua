@@ -1,6 +1,5 @@
-local opts = { noremap = true, silent = true }
-
 local keymap = vim.api.nvim_set_keymap
+local opts = { noremap = true, silent = true }
 
 -- Space to leader
 keymap("", "<Space>", "<Nop>", opts)
@@ -14,14 +13,14 @@ local V = "x" -- visual block
 local t = "t" -- term mode
 local c = "c" -- command mode
 
--- Insert
 -- Exit insert mode with jk
 keymap(i, "jk", "<Esc>", opts)
+
+-- Move left/right in insert mode
 keymap(i, "<C-h>", "<Left>", opts)
 keymap(i, "<C-l>", "<Right>", opts)
-keymap(i, "<C-f>", "<cmd>GoFillStruct<CR>", opts)
 
--- Visual
+-- Copy to clipboard
 keymap(v, "<Leader>y", '"*y', opts)
 keymap(V, "<Leader>y", '"*y', opts)
 
@@ -53,19 +52,7 @@ keymap(n, "<S-Right>", ":vertical resize +2<CR>", opts)
 -- keymap(v, "p", "_p", opts)
 
 -- Telescope
-keymap(n, "<leader>p",
-    "<cmd>lua require'telescope.builtin'.find_files(require('telescope.themes').get_dropdown({ previewer = false }))<CR>"
-    , opts)
-keymap(n, "<leader>P", "<cmd>lua require'telescope.builtin'.find_files()<CR>", opts)
-keymap(n, "<leader>g", "<cmd>Telescope live_grep<CR>", opts)
-keymap(n, "<leader>m", "<cmd>Telescope treesitter<CR>", opts)
-
--- ToggleTerm
-keymap(n, "<C-p><C-p>", '<cmd>ToggleTerm direction=float size=20<CR>', opts)
-keymap(n, "<C-p><C-h>", '<cmd>ToggleTerm direction=horizontal size=20<CR>', opts)
-keymap(n, "<C-p><C-v>", '<cmd>ToggleTerm direction=vertical size=100<CR>', opts)
 
 -- Nvim-Tree
-keymap(n, "<leader>e", ":NvimTreeToggle<CR>:NvimTreeRefresh<CR>", opts) -- Refresh and toggle
 
 -- Rust

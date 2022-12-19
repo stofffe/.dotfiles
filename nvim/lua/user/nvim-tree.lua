@@ -1,17 +1,14 @@
--- following options are the default
--- each of these are documented in `:help nvim-tree.OPTION_NAME`
-local status_ok, nvim_tree = pcall(require, "nvim-tree")
-if not status_ok then
-    return
-end
+local req = "nvim-tree"
+local ok, nvim_tree = pcall(require, req)
+if not ok then print("could not find require \"" .. req .. "\"") return end
 
-local config_status_ok, nvim_tree_config = pcall(require, "nvim-tree.config")
-if not config_status_ok then
-    return
-end
+-- Maps
+local keymap = vim.api.nvim_set_keymap
+local opts = { noremap = true, silent = true }
+keymap('n', "<leader>e", ":NvimTreeToggle<CR>:NvimTreeRefresh<CR>", opts) -- Refresh and toggle
 
-local tree_cb = nvim_tree_config.nvim_tree_callback
-
+-- Setup
+local tree_cb = require("nvim-tree.config").nvim_tree_callback
 nvim_tree.setup {
     disable_netrw = true,
     hijack_netrw = true,
@@ -33,9 +30,7 @@ nvim_tree.setup {
         ignore = true,
         timeout = 500,
     },
-    filters = {
-        dotfiles = true,
-    },
+    filters = { dotfiles = true, },
     actions = {
         open_file = {
             resize_window = true,
@@ -43,8 +38,7 @@ nvim_tree.setup {
     },
     view = {
         width = 30,
-        --[[ height = 30, ]]
-        hide_root_folder = true, -- ?
+        hide_root_folder = true,
         side = "left",
         mappings = {
             custom_only = false,
