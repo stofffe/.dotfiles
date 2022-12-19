@@ -66,16 +66,12 @@ local function lsp_highlight_document(client)
 end
 
 -- On attach
-local on_attach = function(client, bufnr)
-    print("attach")
+local default_attach = function(client, bufnr)
     if client.name == "html" then
         client.server_capabilities.document_formatting = false
     end
     if client.name == "tsserver" then
         client.server_capabilities.document_formatting = false
-    end
-    if client.name == "rust-analyzer" then
-        print("hello")
     end
     lsp_keymaps(bufnr)
     lsp_highlight_document(client)
@@ -84,17 +80,23 @@ end
 -- Automatically set up servers
 mason_lspconfig.setup_handlers {
     function(server_name) -- default handler (optional)
-        if pcall(require, "user.lsp.settings." .. server_name) then
-            require("lspconfig")[server_name].setup(require("user.lsp.settings." .. server_name))
+        local ok, custom = pcall(require, "user.lsp.settings." .. server_name)
+        if ok then
+            require("lspconfig")[server_name].setup(custom)
             local config = require("user.lsp.settings." .. server_name)
+            local on_attach = function(client, bufnr)
+                default_attach(client, bufnr)
+                if not (config.after_attach == nil) then
+                    config.after_attach(client, bufnr)
+                end
+            end
             config.on_attach = on_attach
             require("lspconfig")[server_name].setup(config)
         else
             require("lspconfig")[server_name].setup({
-                on_attach = on_attach
+                on_attach = default_attach
             })
         end
-
     end,
 
     -- Next, you can provide a dedicated handler for specific servers.

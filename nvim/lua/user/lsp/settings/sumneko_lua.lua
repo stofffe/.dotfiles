@@ -1,4 +1,5 @@
 return {
+    after_attach = function() end,
     settings = {
         Lua = {
             diagnostics = {
