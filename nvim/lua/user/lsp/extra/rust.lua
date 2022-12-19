@@ -3,17 +3,37 @@ if not status_ok then
     return
 end
 
-vim.cmd [[ command! RustEnableInlineHints execute 'lua require("rust-tools").inlay_hints.enable()' ]]
-vim.cmd [[ command! RustDisableInlineHints execute 'lua require("rust-tools").inlay_hints.disable()' ]]
 
 rust_tools.setup({
     server = {
         on_attach = function(_, bufnr)
-            print("attach")
-            -- have not gotten keymaps to work here
+            -- Rust specific commands
+            vim.api.nvim_create_user_command("RustEnableInlineHints", function()
+                rust_tools.inlay_hints.enable()
+            end, {})
+            vim.api.nvim_create_user_command("RustDisableInlineHints", function()
+                rust_tools.inlay_hints.disable()
+            end, {})
         end,
+        settings = {
+            ["rust-analyzer"] = {
+                completion = {
+                    postfix = {
+                        enable = false
+                    }
+                },
+                checkOnSave = {
+                    command = "clippy",
+                    allFeatures = true,
+                    overrideCommand = {
+                        'cargo', 'clippy', '--workspace', '--message-format=json',
+                        '--all-targets', '--all-features'
+                    }
+                },
+            }
+        }
     },
     tools = {
         -- Custom here
-    }
+    },
 })

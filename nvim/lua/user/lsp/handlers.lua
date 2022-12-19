@@ -80,6 +80,7 @@ end
 
 -- On attach
 local on_attach = function(client, bufnr)
+    print("attach")
     if client.name == "html" then
         client.server_capabilities.document_formatting = false
     end

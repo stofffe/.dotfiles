@@ -1,31 +1,34 @@
-local status_ok, lsp_installer = pcall(require, "nvim-lsp-installer")
-if not status_ok then
-    return
-end
+local req = "mason"
+local ok, mason = pcall(require, req)
+if not ok then print("could not find require \"" .. req .. "\"") return end
 
-local settings = { "rust_analyzer", "jsonls", "sumneko_lua" }
+local req = "mason-lspconfig"
+local ok, mason_lspconfig = pcall(require, req)
+if not ok then print("could not find require \"" .. req .. "\"") return end
 
--- Register a handler that will be called for all installed servers.
--- Alternatively, you may also register handlers on specific server instances instead (see example below).
-lsp_installer.on_server_ready(function(server)
-    local opts = {
-        on_attach = require("user.lsp.handlers").on_attach,
-        capabilities = require("user.lsp.handlers").capabilities,
+-- mason
+mason.setup {
+    ui = {
+        icons = {
+            package_installed = "✓"
+        }
     }
+}
+mason_lspconfig.setup {
+    ensure_installed = { "sumneko_lua" },
+}
 
-    for _, server_name in ipairs(settings) do
-        if server.name == server_name then
-            local lang_opts = require("user.lsp.settings." .. server.name)
-            opts = vim.tbl_deep_extend("force", lang_opts, opts)
+mason_lspconfig.setup_handlers {
+    function(server_name) -- default handler (optional)
+        if pcall(require, "user.lsp.settings." .. server_name) then
+            require("lspconfig")[server_name].setup(require("user.lsp.settings." .. server_name))
+        else
+            require("lspconfig")[server_name].setup({})
         end
+
+    end,
+    -- Next, you can provide a dedicated handler for specific servers.
+    ["rust_analyzer"] = function()
+        require("user.lsp.extra.rust")
     end
-    -- This setup() function is exactly the same as lspconfig's setup function.
-    -- Refer to https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
-    server:setup(opts)
-end)
-
-local extra = { "go", "rust" }
-
-for _, value in ipairs(extra) do
-    require("user.lsp.extra." .. value)
-end
+}

@@ -144,6 +144,16 @@ _G.packer_plugins = {
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/guihua.lua",
     url = "https://github.com/ray-x/guihua.lua"
   },
+  ["mason-lspconfig.nvim"] = {
+    loaded = true,
+    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/mason-lspconfig.nvim",
+    url = "https://github.com/williamboman/mason-lspconfig.nvim"
+  },
+  ["mason.nvim"] = {
+    loaded = true,
+    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/mason.nvim",
+    url = "https://github.com/williamboman/mason.nvim"
+  },
   ["null-ls.nvim"] = {
     loaded = true,
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/null-ls.nvim",
@@ -158,11 +168,6 @@ _G.packer_plugins = {
     loaded = true,
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/nvim-cmp",
     url = "https://github.com/hrsh7th/nvim-cmp"
-  },
-  ["nvim-lsp-installer"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/nvim-lsp-installer",
-    url = "https://github.com/williamboman/nvim-lsp-installer"
   },
   ["nvim-lspconfig"] = {
     loaded = true,
@@ -229,20 +234,10 @@ _G.packer_plugins = {
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/solarized.nvim",
     url = "https://github.com/shaunsingh/solarized.nvim"
   },
-  ["tabout.nvim"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/tabout.nvim",
-    url = "https://github.com/abecodes/tabout.nvim"
-  },
   ["telescope.nvim"] = {
     loaded = true,
     path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/telescope.nvim",
     url = "https://github.com/nvim-telescope/telescope.nvim"
-  },
-  ["toggleterm.nvim"] = {
-    loaded = true,
-    path = "/Users/christofferandersson/.local/share/nvim/site/pack/packer/start/toggleterm.nvim",
-    url = "https://github.com/akinsho/toggleterm.nvim"
   },
   ["vim-visual-multi"] = {
     loaded = true,
