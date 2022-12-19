@@ -3,7 +3,7 @@ if not status_ok then
     return
 end
 
-local allowed = { "rust_analyzer", "jsonls", "sumneko_lua", "svelte", "gopls", "jdtls" }
+local settings = { "rust_analyzer", "jsonls", "sumneko_lua" }
 
 -- Register a handler that will be called for all installed servers.
 -- Alternatively, you may also register handlers on specific server instances instead (see example below).
@@ -13,7 +13,7 @@ lsp_installer.on_server_ready(function(server)
         capabilities = require("user.lsp.handlers").capabilities,
     }
 
-    for _, server_name in ipairs(allowed) do
+    for _, server_name in ipairs(settings) do
         if server.name == server_name then
             local lang_opts = require("user.lsp.settings." .. server.name)
             opts = vim.tbl_deep_extend("force", lang_opts, opts)
@@ -23,3 +23,9 @@ lsp_installer.on_server_ready(function(server)
     -- Refer to https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
     server:setup(opts)
 end)
+
+local extra = { "go", "rust" }
+
+for _, value in ipairs(extra) do
+    require("user.lsp.extra." .. value)
+end

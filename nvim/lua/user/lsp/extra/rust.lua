@@ -9,6 +9,7 @@ vim.cmd [[ command! RustDisableInlineHints execute 'lua require("rust-tools").in
 rust_tools.setup({
     server = {
         on_attach = function(_, bufnr)
+            print("attach")
             -- have not gotten keymaps to work here
         end,
     },
