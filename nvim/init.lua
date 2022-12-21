@@ -9,5 +9,6 @@ require "user.treesitter"
 require "user.autopairs"
 require "user.comment"
 require "user.nvim-tree"
+require "user.goto-preview"
 --[[ require "user.toggleterm" ]]
 --[[ require "user.tabout" ]]

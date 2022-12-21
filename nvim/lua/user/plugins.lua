@@ -84,6 +84,8 @@ return packer.startup(function(use)
     -- Rust
     use "simrat39/rust-tools.nvim"
 
+    use 'rmagatti/goto-preview'
+
 
     -- Automatically set up your configuration after cloning packer.nvim
     -- Put this at the end after all plugins

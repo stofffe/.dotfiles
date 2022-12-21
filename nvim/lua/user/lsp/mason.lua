@@ -32,7 +32,9 @@ mason_null_ls.setup({
 
 local function lsp_keymaps(bufnr)
     local opts = { remap = false, silent = true, buffer = bufnr }
-    vim.keymap.set('n', 'gD', vim.lsp.buf.type_definition, opts)
+    --[[ vim.keymap.set('n', 'gD', function() ]]
+    --[[     vim.lsp.buf.type_definition() ]]
+    --[[ end, opts) ]]
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
     vim.keymap.set('n', 'gr', require("telescope.builtin").lsp_references, opts)
