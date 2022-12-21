@@ -3,20 +3,24 @@ local ok, telescope = pcall(require, req)
 if not ok then print("could not find require \"" .. req .. "\"") return end
 
 -- Maps
-local keymap = vim.api.nvim_set_keymap
-local opts = { noremap = true, silent = true }
-keymap('n', "<leader>p",
-    "<cmd>lua require'telescope.builtin'.find_files(require('telescope.themes').get_dropdown({ previewer = false }))<CR>"
-    , opts)
-keymap('n', "<leader>P", "<cmd>lua require'telescope.builtin'.find_files()<CR>", opts)
-keymap('n', "<leader>g", "<cmd>Telescope live_grep<CR>", opts)
-keymap('n', "<leader>m", "<cmd>Telescope treesitter<CR>", opts)
+local builtin = require("telescope.builtin")
+local themes = require("telescope.themes")
+vim.keymap.set('n', '<leader>P', builtin.find_files)
+vim.keymap.set('n', '<leader>p', function() builtin.find_files(themes.get_dropdown({ previewer = false })) end)
+vim.keymap.set('n', '<leader>g', builtin.live_grep)
+vim.keymap.set('n', '<leader>n', builtin.grep_string)
+vim.keymap.set('n', '<leader>m', builtin.diagnostics)
+vim.keymap.set('n', '<leader>/', function()
+    builtin.current_buffer_fuzzy_find(themes.get_dropdown {
+        winblend = 10,
+        previewer = false,
+    })
+end)
 
 -- Setup
 local actions = require("telescope.actions")
 telescope.setup {
     defaults = {
-
         prompt_prefix = " ",
         selection_caret = " ",
         path_display = { "smart" },
