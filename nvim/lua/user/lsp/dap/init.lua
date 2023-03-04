@@ -1,6 +1,9 @@
 local req = "dap"
 local ok, dap = pcall(require, req)
-if not ok then print("could not find require \"" .. req .. "\"") return end
+if not ok then
+    print("could not find require \"" .. req .. "\"")
+    return
+end
 
 --Plugins
 local dapui = require("dapui")
@@ -47,4 +50,25 @@ end
 dap.listeners.before.event_exited["dapui_config"] = function()
     dapui.close()
 end
-dapui.setup()
+dapui.setup({
+    controls = {
+        element = "repl",
+        enabled = true,
+        icons = {
+            disconnect = "disc",
+            pause = "pause",
+            play = "play",
+            run_last = "last",
+            step_back = "back",
+            step_into = "into",
+            step_out = "out",
+            step_over = "over",
+            terminate = "term"
+        }
+    },
+    icons = {
+        collapsed = "",
+        current_frame = "c",
+        expanded = ""
+    },
+})
