@@ -55,6 +55,7 @@ return packer.startup(function(use)
     -- Treesitter
     use { "nvim-treesitter/nvim-treesitter", run = ":TSUpdate", }
     use "JoosepAlviste/nvim-ts-context-commentstring"
+    use "nvim-treesitter/playground"
 
     -- Cmp
     use "hrsh7th/nvim-cmp" -- The completion plugin
@@ -77,14 +78,23 @@ return packer.startup(function(use)
     use "jayp0521/mason-null-ls.nvim"
     use "jose-elias-alvarez/null-ls.nvim" -- complementary diagnostics and formatters
 
+    -- Dap
+    use "mfussenegger/nvim-dap"
+    use "nvim-telescope/telescope-dap.nvim"
+    use "jayp0521/mason-nvim-dap.nvim"
+    use "theHamsta/nvim-dap-virtual-text"
+    use "rcarriga/nvim-dap-ui"
+
     -- Golang
     use "ray-x/go.nvim"
     use "ray-x/guihua.lua"
 
     -- Rust
     use "simrat39/rust-tools.nvim"
+    use "rmagatti/goto-preview"
 
-    use 'rmagatti/goto-preview'
+    -- Web
+    use "windwp/nvim-ts-autotag"
 
 
     -- Automatically set up your configuration after cloning packer.nvim

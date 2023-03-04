@@ -10,12 +10,29 @@ configs.setup {
         additional_vim_regex_highlighting = true,
     },
     indent = { enable = true, disable = { "yaml" } },
+    custom_captures = {
+        ["none"] = "test",
+    },
     -- Plugin specific
     autopairs = { enable = true },
+    autotags = { enable = true },
     context_commentstring = {
         enable = true,
         enable_autocmd = false,
     },
+    incremental_selection = {
+        enable = true,
+        keymaps = {
+            init_selection = '<c-x>',
+            node_incremental = '<c-x>',
+            --[[ scope_incremental = '<c-s>', ]]
+            node_decremental = '<c-backspace>',
+        },
+    },
+    -- Playground
+    playground = {
+        enable = true,
+    }
 }
 
 -- Install language if not installed

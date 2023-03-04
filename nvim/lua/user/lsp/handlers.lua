@@ -49,9 +49,9 @@ vim.api.nvim_create_user_command("Format", function()
 end, {})
 
 -- Auto format on save
-local autoFormatGroup = vim.api.nvim_create_augroup("lsp_document_hightlight", { clear = false })
+local autoFormatGroup = vim.api.nvim_create_augroup("lsp_auto_format", { clear = false })
 local autoFormatId = vim.api.nvim_create_autocmd("BufWritePre", {
-    command = "silent! lua vim.lsp.buf.formatting_sync()",
+    command = "lua vim.lsp.buf.format()",
     group = autoFormatGroup,
 })
 vim.api.nvim_create_user_command("DisableAutoFormat", function()
@@ -59,7 +59,7 @@ vim.api.nvim_create_user_command("DisableAutoFormat", function()
 end, {})
 vim.api.nvim_create_user_command("EnableAutoFormat", function()
     autoFormatId = vim.api.nvim_create_autocmd("BufWritePre", {
-        command = "silent! lua vim.lsp.buf.formatting_sync()",
+        command = "silent! lua vim.lsp.buf.format()",
         group = autoFormatGroup,
     })
 end, {})

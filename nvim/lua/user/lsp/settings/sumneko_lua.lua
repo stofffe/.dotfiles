@@ -1,5 +1,6 @@
 return {
-    after_attach = function() end,
+    after_attach = function()
+    end,
     settings = {
         Lua = {
             diagnostics = {
@@ -7,8 +8,8 @@ return {
             },
             workspace = {
                 library = {
-                    [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                    [vim.fn.stdpath("config") .. "/lua"] = true,
+                        [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                        [vim.fn.stdpath("config") .. "/lua"] = true,
                 },
             },
         },

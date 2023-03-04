@@ -7,6 +7,9 @@ vim.api.nvim_create_autocmd("ColorScheme", {
             if colorscheme == "darkplus" then
                 -- Remove reverse border on floating windows
                 vim.cmd [[ highlight VertSplit gui=None cterm=None ]]
+
+                -- React
+                vim.api.nvim_set_hl(0, "typescriptCall", { link = "cleared" })
             end
 
             if colorscheme == "gruvbox" then

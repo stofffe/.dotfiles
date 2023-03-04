@@ -7,8 +7,10 @@ require "user.lsp"
 require "user.telescope"
 require "user.treesitter"
 require "user.autopairs"
+require "user.autotag"
 require "user.comment"
 require "user.nvim-tree"
 require "user.goto-preview"
+require "user.surround"
 --[[ require "user.toggleterm" ]]
 --[[ require "user.tabout" ]]

@@ -6,6 +6,7 @@ if not ok then print("could not find require \"" .. req .. "\"") return end
 require("user.lsp.null-ls")
 require("user.lsp.mason")
 require("user.lsp.handlers")
+require("user.lsp.dap")
 
 -- language specific plugins
 

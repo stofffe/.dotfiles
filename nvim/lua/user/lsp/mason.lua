@@ -1,14 +1,30 @@
 local req = "mason"
 local ok, mason = pcall(require, req)
-if not ok then print("could not find require \"" .. req .. "\"") return end
+if not ok then
+    print("could not find require \"" .. req .. "\"")
+    return
+end
 
 local req = "mason-lspconfig"
 local ok, mason_lspconfig = pcall(require, req)
-if not ok then print("could not find require \"" .. req .. "\"") return end
+if not ok then
+    print("could not find require \"" .. req .. "\"")
+    return
+end
 
 local req = "mason-null-ls"
 local ok, mason_null_ls = pcall(require, req)
-if not ok then print("could not find require \"" .. req .. "\"") return end
+if not ok then
+    print("could not find require \"" .. req .. "\"")
+    return
+end
+
+local req = "mason-nvim-dap"
+local ok, mason_nvim_dap = pcall(require, req)
+if not ok then
+    print("could not find require \"" .. req .. "\"")
+    return
+end
 
 -- Mason
 mason.setup {
@@ -18,23 +34,26 @@ mason.setup {
         }
     }
 }
+
 -- Lspconfig
 mason_lspconfig.setup {
     ensure_installed = { "sumneko_lua" },
 }
+
 -- Null-ls
 mason_null_ls.setup({
     ensure_installed = nil,
     automatic_installation = true,
     automatic_setup = true
 })
--- Dap?
 
+-- Dap
+mason_nvim_dap.setup()
+
+-- Lsp keymaps
 local function lsp_keymaps(bufnr)
     local opts = { remap = false, silent = true, buffer = bufnr }
-    --[[ vim.keymap.set('n', 'gD', function() ]]
-    --[[     vim.lsp.buf.type_definition() ]]
-    --[[ end, opts) ]]
+    vim.keymap.set('n', 'gD', vim.lsp.buf.type_definition, opts)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
     vim.keymap.set('n', 'gr', require("telescope.builtin").lsp_references, opts)
@@ -72,6 +91,7 @@ local default_attach = function(client, bufnr)
         client.server_capabilities.document_formatting = false
     end
     if client.name == "tsserver" then
+        vim.api.nvim_set_hl(0, "typescriptBlock", { link = "cleared" })
         client.server_capabilities.document_formatting = false
     end
     lsp_keymaps(bufnr)
@@ -101,7 +121,7 @@ mason_lspconfig.setup_handlers {
     end,
 
     -- Next, you can provide a dedicated handler for specific servers.
-    ["rust_analyzer"] = function()
+        ["rust_analyzer"] = function()
         require("user.lsp.extra.rust").setup(lsp_keymaps)
     end,
 }
