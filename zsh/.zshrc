@@ -42,6 +42,9 @@ export GOBIN=$GOPATH/bin
 # grpc dart
 export PATH=$PATH:$HOME/.pub-cache/bin
 
+# Hombrew
+export LIBRARY_PATH="$LIBRARY_PATH:$(brew --prefix)/lib"
+
 # Aliases
 alias repo='f() { open https://github.com/$1 };f'
 alias nv=nvim
@@ -59,6 +62,9 @@ alias tmk='f() { tmux kill-session -t $1 };f'
 # fzf
 export FZF_DEFAULT_COMMAND='fd --type f --hidden'
 alias ff='cd $(fd --type directory --hidden --search-path=$HOME/dev --search-path=$HOME/.dotfiles --search-path=$HOME/kth | fzf)'
+
+# Dap
+alias lldbServer="while sleep 1; do ~/.local/share/nvim/mason/bin/codelldb --port 13000; done"
 
 # Source
 source ~/.dotfiles/zsh/powerlevel10k/powerlevel10k.zsh-theme
