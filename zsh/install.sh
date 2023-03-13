@@ -1,4 +1,17 @@
-#!/bin/bash 
-git clone git@github.com:romkatv/powerlevel10k.git ~/.dotfiles/zsh/powerlevel10k
-git clone git@github.com:zsh-users/zsh-autosuggestions.git ~/.dotfiles/zsh/plugins/zsh-autosuggestions
-git clone git@github.com:zsh-users/zsh-syntax-highlighting.git ~/.dotfiles/zsh/plugins/zsh-syntax-highlighting
+#!/bin/bash
+
+echo "--zsh--"
+
+rm ~/.zshrc
+ln -s ~/.dotfiles/zsh/.zshrc ~/.zshrc
+
+rm -rf powerlevel10k
+git clone git@github.com:romkatv/powerlevel10k.git powerlevel10k
+
+rm -rf plugins/zsh-autosuggestions
+git clone git@github.com:zsh-users/zsh-autosuggestions.git plugins/zsh-autosuggestions
+
+rm -rf plugins/zsh-syntax.highlighting
+git clone git@github.com:zsh-users/zsh-syntax-highlighting.git plugins/zsh-syntax-highlighting
+
+echo "--done--"

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+url=$(git remote get-url origin | sed "s/git@//g" | sed "s/.git//g" | sed "s/:/\//g")
+open "https://${url}" 

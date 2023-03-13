@@ -32,6 +32,7 @@ bindkey -s '›' 'lfcd\n' # option + b
 
 # own binaries
 export PATH=$PATH:$HOME/mybin
+export PATH=$PATH:$HOME/.dotfiles/zsh/scripts
 
 # Go
 export GO111MODULE=on 
@@ -80,3 +81,7 @@ source ~/.dotfiles/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.z
 # ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
 # test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
+# pnpm
+export PNPM_HOME="/Users/christofferandersson/Library/pnpm"
+export PATH="$PNPM_HOME:$PATH"
+# pnpm end
