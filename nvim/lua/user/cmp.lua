@@ -56,17 +56,17 @@ cmp.setup {
         end,
     },
     mapping = {
-            ["<C-k>"] = cmp.mapping.select_prev_item(),
-            ["<C-j>"] = cmp.mapping.select_next_item(),
-            ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
-            ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
-            ["<C-y>"] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
-            ["<C-d>"] = cmp.mapping { i = cmp.mapping.abort(), c = cmp.mapping.close(), },
-            ["<C-s>"] = cmp.mapping.complete(),
+        ["<C-k>"] = cmp.mapping.select_prev_item(),
+        ["<C-j>"] = cmp.mapping.select_next_item(),
+        ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
+        ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
+        ["<C-y>"] = cmp.config.disable,     -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
+        ["<C-d>"] = cmp.mapping { i = cmp.mapping.abort(), c = cmp.mapping.close(), },
+        ["<C-s>"] = cmp.mapping.complete(),
         -- Acceptecurrently selected item. If none selected, `select` first item.
         -- Set `select` to `false` to only confirm explicitly selected items.
-            ["<CR>"] = cmp.mapping.confirm { select = true },
-            ["<Tab>"] = cmp.mapping(function(fallback)
+        ["<CR>"] = cmp.mapping.confirm { select = true },
+        ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_next_item()
             elseif luasnip.expandable() then
@@ -82,7 +82,7 @@ cmp.setup {
             "i",
             "s",
         }),
-            ["<S-Tab>"] = cmp.mapping(function(fallback)
+        ["<S-Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_prev_item()
             elseif luasnip.jumpable(-1) then
@@ -102,13 +102,13 @@ cmp.setup {
             vim_item.kind = string.format("%s", kind_icons[vim_item.kind])
             -- vim_item.kind = string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind) -- This concatonates the icons with the name of the item kind
             vim_item.menu = ({
-                    nvim_lsp = "[LSP]",
-                    nvim_lsp_signature_help = "[SIGNATURE]",
-                    nvim_lua = "[NVIM_LUA]",
-                    luasnip = "[Snippet]",
-                    buffer = "[Buffer]",
-                    path = "[Path]",
-                })[entry.source.name]
+                nvim_lsp = "[LSP]",
+                nvim_lsp_signature_help = "[SIGNATURE]",
+                nvim_lua = "[NVIM_LUA]",
+                luasnip = "[Snippet]",
+                buffer = "[Buffer]",
+                path = "[Path]",
+            })[entry.source.name]
             return vim_item
         end,
     },

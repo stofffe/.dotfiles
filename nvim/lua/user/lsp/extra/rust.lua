@@ -4,9 +4,11 @@ if not status_ok then
 end
 
 local extension_path = vim.env.HOME .. '/.local/share/nvim/mason/packages/codelldb/extension'
-local codelldb_path = extension_path .. 'adapter/codelldb'
-local liblldb_path = extension_path .. 'lldb/lib/liblldb.dylib' -- MacOS: This may be .dylib otherwise .so
+local codelldb_path = extension_path .. '/adapter/codelldb'
+local liblldb_path = extension_path .. '/lldb/lib/liblldb.dylib' -- MacOS: This may be .dylib otherwise .so
 
+--[[ local a = vim.env.HOME .. '/.local/share/nvim/mason/packages/codelldb/extension/adapter/codelldb' ]]
+--[[ local b = vim.env.HOME .. '/.local/share/nvim/mason/packages/codelldb/extension/lldb/lib/liblldb.dylib' ]]
 return {
     setup = function(lsp_keymaps)
         rust_tools.setup({
@@ -44,7 +46,8 @@ return {
             },
             dap = {
                 adapter = require('rust-tools.dap').get_codelldb_adapter(
-                    codelldb_path, liblldb_path)
+                    codelldb_path, liblldb_path
+                )
             },
             tools = {
                 -- Custom here

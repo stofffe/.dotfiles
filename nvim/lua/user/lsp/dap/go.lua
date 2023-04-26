@@ -5,17 +5,17 @@ dap.adapters.go = function(callback, config)
     local pid_or_err
     local port = 38697
     handle, pid_or_err =
-    vim.loop.spawn(
-        "dlv",
-        {
-            args = { "dap", "-l", "127.0.0.1:" .. port },
-            detached = true
-        },
-        function(code)
-            handle:close()
-            print("Delve exited with exit code: " .. code)
-        end
-    )
+        vim.loop.spawn(
+            "dlv",
+            {
+                args = { "dap", "-l", "127.0.0.1:" .. port },
+                detached = true
+            },
+            function(code)
+                handle:close()
+                print("Delve exited with exit code: " .. code)
+            end
+        )
     dap.repl.open()
     callback({ type = "server", host = "127.0.0.1", port = port })
 end

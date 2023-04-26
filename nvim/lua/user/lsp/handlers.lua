@@ -2,7 +2,10 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 local req = "cmp_nvim_lsp"
 local ok, cmp_nvim_lsp = pcall(require, req)
-if not ok then print("could not find require \"" .. req .. "\"") return end
+if not ok then
+    print("could not find require \"" .. req .. "\"")
+    return
+end
 cmp_nvim_lsp.setup {
     capabilities = capabilities,
 }
@@ -10,9 +13,9 @@ cmp_nvim_lsp.setup {
 local setup = function()
     local signs = {
         { name = "DiagnosticSignError", text = "" },
-        { name = "DiagnosticSignWarn", text = "" },
-        { name = "DiagnosticSignHint", text = "" },
-        { name = "DiagnosticSignInfo", text = "" },
+        { name = "DiagnosticSignWarn",  text = "" },
+        { name = "DiagnosticSignHint",  text = "" },
+        { name = "DiagnosticSignInfo",  text = "" },
     }
 
     for _, sign in ipairs(signs) do

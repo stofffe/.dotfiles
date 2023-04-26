@@ -37,7 +37,7 @@ mason.setup {
 
 -- Lspconfig
 mason_lspconfig.setup {
-    ensure_installed = { "sumneko_lua" },
+    ensure_installed = { "lua_ls" },
 }
 
 -- Null-ls
@@ -121,7 +121,7 @@ mason_lspconfig.setup_handlers {
     end,
 
     -- Next, you can provide a dedicated handler for specific servers.
-        ["rust_analyzer"] = function()
+    ["rust_analyzer"] = function()
         require("user.lsp.extra.rust").setup(lsp_keymaps)
     end,
 }
