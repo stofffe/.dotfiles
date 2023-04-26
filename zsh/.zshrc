@@ -17,57 +17,13 @@ zmodload zsh/complist
 compinit
 _comp_options+=(globdots)		# Include hidden files.
 
-# LF
-export EDITOR="nvim"
-lfcd () {
-    tmp="$(mktemp)"
-    lf -last-dir-path="$tmp" "$@"
-    if [ -f "$tmp" ]; then
-        dir="$(cat "$tmp")"
-        rm -f "$tmp"
-        [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
-    fi
-}
-bindkey -s '›' 'lfcd\n' # option + b
-
-# own binaries
-export PATH=$PATH:$HOME/mybin
-export PATH=$PATH:$HOME/.dotfiles/zsh/scripts
-
-# Go
-export GO111MODULE=on 
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin
-export GOBIN=$GOPATH/bin
-
-# grpc dart
-export PATH=$PATH:$HOME/.pub-cache/bin
-
-# Hombrew
-export LIBRARY_PATH="$LIBRARY_PATH:$(brew --prefix)/lib"
+# Exports
+source ~/.dotfiles/zsh/exports.zsh
 
 # Aliases
-alias repo='f() { open https://github.com/$1 };f'
-alias nv=nvim
-alias ll="ls -lah"
-alias cl=clear
-# alias example='f() { echo Your arg was $1. };f'
+source ~/.dotfiles/zsh/aliases.zsh
 
-# TMUX aliases
-alias tmn='f() { tmux new -s $1 };f'
-alias tma='f() { tmux attach -t $1 };f'
-alias tms='tmux source-file ~/.tmux.config'
-alias tmls='tmux ls'
-alias tmk='f() { tmux kill-session -t $1 };f'
-
-# fzf
-export FZF_DEFAULT_COMMAND='fd --type f --hidden'
-alias ff='cd $(fd --type directory --hidden --search-path=$HOME/dev --search-path=$HOME/.dotfiles --search-path=$HOME/kth | fzf)'
-
-# Dap
-alias lldbServer="while sleep 1; do ~/.local/share/nvim/mason/bin/codelldb --port 13000; done"
-
-# Source
+# Plugins
 source ~/.dotfiles/zsh/powerlevel10k/powerlevel10k.zsh-theme
 source ~/.dotfiles/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.dotfiles/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -75,13 +31,3 @@ source ~/.dotfiles/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.z
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-
-# ### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
-# export PATH="/Users/christofferandersson/.rd/bin:$PATH"
-# ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
-# test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-
-# pnpm
-export PNPM_HOME="/Users/christofferandersson/Library/pnpm"
-export PATH="$PNPM_HOME:$PATH"
-# pnpm end

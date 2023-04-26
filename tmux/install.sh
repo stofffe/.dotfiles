@@ -2,7 +2,10 @@
 
 echo "--tmux--"
 
-rm ~/.tmux.config
-ln -s ~/.dotfiles/tmux/.tmux.config ~/.tmux.config
+mkdir -p ~/.config/tmux
+
+rm -f ~/.tmux.config
+rm -f ~/.config/tmux/tmux.config
+ln -s ~/.dotfiles/tmux/.tmux.config ~/.config/tmux/tmux.config
 
 echo "--done--"

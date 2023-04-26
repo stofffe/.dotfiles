@@ -2,16 +2,24 @@
 
 echo "--zsh--"
 
-rm ~/.zshrc
-ln -s ~/.dotfiles/zsh/.zshrc ~/.zshrc
+rm ~/.zshenv
+ln -s ~/.dotfiles/zsh/.zshenv ~/.zshenv
 
-rm -rf powerlevel10k
-git clone git@github.com:romkatv/powerlevel10k.git powerlevel10k
+mkdir -p ~/.config/zsh
 
-rm -rf plugins/zsh-autosuggestions
-git clone git@github.com:zsh-users/zsh-autosuggestions.git plugins/zsh-autosuggestions
+rm -f ~/.zshrc
+rm -f ~/.config/zsh/.zshrc
+ln -s ~/.dotfiles/zsh/.zshrc ~/.config/zsh/.zshrc
 
-rm -rf plugins/zsh-syntax.highlighting
-git clone git@github.com:zsh-users/zsh-syntax-highlighting.git plugins/zsh-syntax-highlighting
+mkdir -p ~/.dotfiles/zsh/plugins
+
+rm -rf ~/.dotfiles/zsh/powerlevel10k
+git clone git@github.com:romkatv/powerlevel10k.git ~/.dotfiles/zsh/powerlevel10k
+
+rm -rf ~/.dotfiles/zsh/plugins/zsh-autosuggestions
+git clone git@github.com:zsh-users/zsh-autosuggestions.git ~/.dotfiles/zsh/plugins/zsh-autosuggestions
+
+rm -rf ~/.dotfiles/zsh/plugins/zsh-syntax.highlighting
+git clone git@github.com:zsh-users/zsh-syntax-highlighting.git ~/.dotfiles/zsh/plugins/zsh-syntax-highlighting
 
 echo "--done--"
