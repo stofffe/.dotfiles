@@ -1,0 +1,29 @@
+#!python3
+
+import subprocess
+import sys
+
+# Get examples as list
+out = subprocess.run(["cargo", "run", "--example"], stderr=subprocess.PIPE)
+string = out.stderr.decode("utf-8")
+examples = string.splitlines()[2:-1]
+examples = list(map(str.strip, examples))
+
+# Choose example
+print("Choose example:")
+for i, line in enumerate(examples):
+    print(i+1, line)
+
+try:
+    example_i = int(input())
+    example_name = examples[example_i-1]
+except:
+    print("invalid example")
+    exit(1)
+
+
+command = ["cargo", "run", "--example", example_name]
+flags = sys.argv[1:]
+for flag in flags:
+    command.append(flag)
+subprocess.run(command)
