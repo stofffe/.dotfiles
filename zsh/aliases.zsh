@@ -6,7 +6,7 @@ alias cl=clear
 # tmux
 alias tmn='f() { tmux new -s $1 };f'
 alias tma='f() { tmux attach -t $1 };f'
-alias tms='tmux source-file ~/.tmux.config'
+alias tms='tmux source-file ~/.config/tmux/tmux.config'
 alias tmls='tmux ls'
 alias tmk='f() { tmux kill-session -t $1 };f'
 
