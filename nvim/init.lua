@@ -12,5 +12,6 @@ require "user.comment"
 require "user.nvim-tree"
 require "user.goto-preview"
 require "user.surround"
+require "user.luasnip"
 --[[ require "user.toggleterm" ]]
 --[[ require "user.tabout" ]]

@@ -17,7 +17,10 @@ end
 
 local req = "packer"
 local ok, packer = pcall(require, req)
-if not ok then print("could not find require \"" .. req .. "\"") return end
+if not ok then
+    print("could not find require \"" .. req .. "\"")
+    return
+end
 
 -- Have packer use a popup window
 packer.init {
@@ -30,8 +33,8 @@ packer.init {
 return packer.startup(function(use)
     -- My plugins here
     use "wbthomason/packer.nvim" -- Have packer manage itself
-    use "nvim-lua/popup.nvim" -- An implementation of the Popup API from vim in Neovim
-    use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins
+    use "nvim-lua/popup.nvim"    -- An implementation of the Popup API from vim in Neovim
+    use "nvim-lua/plenary.nvim"  -- Useful lua functions used ny lots of plugins
 
     -- Small plugins
     use "windwp/nvim-autopairs" -- Auto completes pairs
@@ -45,6 +48,7 @@ return packer.startup(function(use)
     use "morhetz/gruvbox"
     use "NLKNguyen/papercolor-theme"
     use "shaunsingh/solarized.nvim"
+    use { "catppuccin/nvim", as = "catppuccin" }
 
     -- Telescope
     use { "nvim-telescope/telescope.nvim", requires = { { "nvim-lua/plenary.nvim" } } }
@@ -58,17 +62,17 @@ return packer.startup(function(use)
     use "nvim-treesitter/playground"
 
     -- Cmp
-    use "hrsh7th/nvim-cmp" -- The completion plugin
-    use "hrsh7th/cmp-buffer" -- buffer completions
-    use "hrsh7th/cmp-path" -- path completions
-    use "hrsh7th/cmp-cmdline" -- cmdline completions
+    use "hrsh7th/nvim-cmp"         -- The completion plugin
+    use "hrsh7th/cmp-buffer"       -- buffer completions
+    use "hrsh7th/cmp-path"         -- path completions
+    use "hrsh7th/cmp-cmdline"      -- cmdline completions
     use "saadparwaiz1/cmp_luasnip" -- snippet completions
     use "hrsh7th/cmp-nvim-lsp"
     use "hrsh7th/cmp-nvim-lua"
     use "hrsh7th/cmp-nvim-lsp-signature-help"
 
     -- Snippets
-    use "L3MON4D3/LuaSnip" --snippet engine
+    use "L3MON4D3/LuaSnip"             --snippet engine
     use "rafamadriz/friendly-snippets" -- a bunch of snippets to use
 
     -- LSP
