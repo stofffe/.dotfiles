@@ -20,8 +20,8 @@ noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
-nnoremap <S-Up> :resize +2<CR>
-nnoremap <S-Down> :resize -2<CR>
+nnoremap <S-Up> :resize -2<CR>
+nnoremap <S-Down> :resize +2<CR>
 nnoremap <S-Left> :vertical resize -2<CR>
 nnoremap <S-Right> :vertical resize +2<CR>
 
