@@ -9,6 +9,7 @@ alias tma='f() { tmux attach -t $1 };f'
 alias tms='tmux source-file ~/.config/tmux/tmux.config'
 alias tmls='tmux ls'
 alias tmk='f() { tmux kill-session -t $1 };f'
+alias tmc='tmux save-buffer - | pbcopy'
 
 # fzf
 export FZF_DEFAULT_COMMAND='fd --type f --hidden'
@@ -17,3 +18,5 @@ alias ff='cd $(fd --type directory --hidden --search-path=$HOME/dev --search-pat
 # Dap
 alias lldbserver="while sleep 1; do ~/.local/share/nvim/mason/bin/codelldb --port 13000; done"
 
+# Quickly open git
+# alias opengit='open "https://$(git remote get-url origin | sed "s/git@//g" | sed "s/.git//g" | sed "s/:/\//g")"'
