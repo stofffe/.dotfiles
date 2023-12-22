@@ -33,7 +33,7 @@ vim.keymap.set("x", "p", [["_dP]], opts)
 -- Normal --
 -- Format and save
 --[[ vim.keymap.set('n', "<leader>f", ":Format<cr>", opts) ]]
-vim.keymap.set('n', "<leader>f", ":w<cr>", opts)
+vim.keymap.set('n', "<leader>f", "<cmd>Format<cr>", opts)
 vim.keymap.set('n', "<leader>s", ":w<cr>", opts)
 vim.keymap.set('n', "<leader>q", ":q<cr>", opts)
 
