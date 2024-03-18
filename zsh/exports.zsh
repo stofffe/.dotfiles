@@ -13,7 +13,7 @@ export PATH=$PATH:$GOPATH/bin
 export GOBIN=$GOPATH/bin
 
 # Rust
-export PATH=$PATH,$HOME/.cargo/bin
+export PATH=$PATH:$HOME/.cargo/bin
 
 # -------------- 
 
