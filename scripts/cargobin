@@ -1,0 +1,53 @@
+#!python3
+
+import subprocess
+import sys
+
+
+def choose():
+    print("Choose bin:")
+    for i, line in enumerate(examples):
+        print(i + 1, line)
+    return convert(input())
+
+
+def convert(inp):
+    try:
+        index = int(inp) - 1
+        if index > len(examples):
+            print("index out of bounds")
+            exit(1)
+        return examples[index]
+    except:
+        if inp not in examples and inp != SKIP:
+            print("invalid bin name")
+            exit(1)
+        return inp
+
+
+def run(example_name, args):
+    command = ["cargo", "run", "--bin", example_name]
+    for flag in args:
+        command.append(flag)
+    subprocess.run(command)
+
+
+SKIP = "--"
+
+# Get examples as list
+out = subprocess.run(["cargo", "run", "--bin"], stderr=subprocess.PIPE)
+string = out.stderr.decode("utf-8")
+examples = string.splitlines()[2:-1]
+examples = list(map(str.strip, examples))
+
+# no args
+if len(sys.argv) == 1:
+    example_name = choose()
+    run(example_name, sys.argv[1:])
+else:
+    if sys.argv[1] == SKIP:
+        example_name = choose()
+        run(example_name, sys.argv[2:])
+    else:
+        example_name = convert(sys.argv[1])
+        run(example_name, sys.argv[2:])
