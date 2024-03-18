@@ -1,0 +1,104 @@
+-- vim.g.rustaceanvim = {
+-- 	-- Plugin configuration
+-- 	tools = {},
+-- 	-- LSP configuration
+-- 	server = {
+-- 		on_attach = function(client, bufnr)
+-- 			-- you can also put keymaps in here
+-- 		end,
+-- 		default_settings = {
+-- 			-- rust-analyzer language server configuration
+-- 			["rust-analyzer"] = {
+-- 				checkOnSave = {
+-- 					command = "clippy",
+-- 					allFeatures = true,
+-- 					overrideCommand = {
+-- 						"cargo",
+-- 						"clippy",
+-- 						"--workspace",
+-- 						"--message-format=json",
+-- 						"--all-targets",
+-- 						"--all-features",
+-- 					},
+-- 				},
+-- 			},
+-- 		},
+-- 	},
+-- 	-- DAP configuration
+-- 	dap = {},
+-- }
+
+-- Install rust specific config
+-- HOME_PATH = os.getenv("HOME") .. "/"
+-- MASON_PATH = HOME_PATH .. ".local/share/nvim/mason/packages/"
+-- local codelldb_path = MASON_PATH .. "codelldb/extension/adapter/codelldb"
+-- local liblldb_path = MASON_PATH .. "codelldb/extension/lldb/lib/liblldb.dylib"
+--
+-- local opts = {
+-- 	dap = {
+-- 		adapter = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path),
+-- 	},
+-- 	server = {
+-- 		settings = {
+-- 			completion = {
+-- 				postfix = {
+-- 					enable = false,
+-- 				},
+-- 			},
+-- 			diagnostics = {
+-- 				enable = true,
+-- 			},
+-- 			checkOnSave = {
+-- 				command = "clippy",
+-- 				allFeatures = true,
+-- 				overrideCommand = {
+-- 					"cargo",
+-- 					"clippy",
+-- 					"--workspace",
+-- 					"--message-format=json",
+-- 					"--all-targets",
+-- 					"--all-features",
+-- 				},
+-- 			},
+-- 		},
+-- 	},
+-- }
+-- require("rust-tools").setup(opts)
+-- checkOnSave = {
+-- 	allFeatures = true,
+-- 	overrideCommand = {
+-- 		"cargo",
+-- 		"clippy",
+-- 		"--workspace",
+-- 		"--message-format=json",
+-- 		"--all-targets",
+-- 		"--all-features",
+-- 	},
+-- },
+-- checkOnSave = {
+-- 	allFeatures = true,
+-- 	command = "clippy",
+-- 	extraArgs = {
+-- 		"--",
+-- 		"--no-deps",
+-- 		"-Dclippy::correctness",
+-- 		"-Dclippy::complexity",
+-- 		"-Wclippy::perf",
+-- 		"-Wclippy::pedantic",
+-- 	},
+-- },
+-- check = {
+-- 	command = "clippy",
+-- },
+-- 	allFeatures = true,
+-- 	overrideCommand = {
+-- 		"cargo",
+-- 		"clippy",
+-- 		"--workspace",
+-- 		"--message-format=json",
+-- 		"--all-targets",
+-- 		"--all-features",
+-- 	},
+-- },
+-- Normal setup
+
