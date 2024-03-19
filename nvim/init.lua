@@ -48,7 +48,7 @@ vim.keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 vim.keymap.set("i", "<C-h>", "<Left>", { desc = "Move left in insert mode" })
 vim.keymap.set("i", "<C-l>", "<Right>", { desc = "Move right in insert mode" })
 vim.keymap.set({ "n", "i" }, "<C-q>", "@q", { desc = "Execute default macro @q" })
-vim.keymap.set("x", "p", [['_dP]], { desc = "Keep yank when pasting" })
+--vim.keymap.set("x", "p", [['_dP]], { desc = "Keep yank when pasting" })
 vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
@@ -317,6 +317,18 @@ require("lazy").setup({
 						vim.keymap.set("n", "<leader>h", "<cmd>ClangdSwitchSourceHeader<CR>", opts)
 					end,
 				},
+				templ = {
+					on_attach = function(_, bufnr)
+						local opts = { silent = true, buffer = bufnr }
+						vim.keymap.set("n", "<leader>h", function()
+							local path = vim.api.nvim_buf_get_name(bufnr)
+							local gen_path = path:gsub(".templ", "_templ.go", 1)
+							print(path, gen_path)
+							vim.cmd("edit " .. gen_path)
+							vim.cmd("edit " .. path)
+						end, opts)
+					end,
+				},
 				rust_analyzer = {
 					tools = {},
 					settings = {
@@ -336,6 +348,9 @@ require("lazy").setup({
 							},
 						},
 					},
+				},
+				emmet_ls = {
+					filetypes = { "html", "templ" },
 				},
 				gopls = {},
 				lua_ls = {
@@ -444,12 +459,7 @@ require("lazy").setup({
 			formatters_by_ft = {
 				lua = { "stylua" },
 				go = { "goimports", "gofmt" },
-				-- Conform can also run multiple formatters sequentially
-				-- python = { "isort", "black" },
-				--
-				-- You can use a sub-list to tell conform to run *until* a formatter
-				-- is found.
-				-- javascript = { { "prettierd", "prettier" } },
+				templ = { "templ" },
 			},
 		},
 		init = function()
