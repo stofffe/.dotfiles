@@ -21,19 +21,6 @@ export PATH=$PATH:$HOME/.cargo/bin
 export PNPM_HOME="/Users/christofferandersson/Library/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 
-# LF
-export EDITOR="nvim"
-lfcd () {
-    tmp="$(mktemp)"
-    lf -last-dir-path="$tmp" "$@"
-    if [ -f "$tmp" ]; then
-        dir="$(cat "$tmp")"
-        rm -f "$tmp"
-        [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
-    fi
-}
-bindkey -s '›' 'lfcd\n' # option + b
-
 # grpc dart
 # export PATH=$PATH:$HOME/.pub-cache/bin
 
