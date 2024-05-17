@@ -550,7 +550,7 @@ require("lazy").setup({
 					["<C-k>"] = cmp.mapping.select_prev_item(), -- Select the [p]revious item
 
 					["<CR>"] = cmp.mapping.confirm({ select = true }),
-					["<Tab>"] = cmp.mapping.confirm({ select = true }),
+					-- ["<Tab>"] = cmp.mapping.confirm({ select = true }),
 					["<C-s>"] = cmp.mapping.complete(),
 					["<C-d>"] = cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() }),
 
@@ -717,7 +717,14 @@ require("lazy").setup({
 				ignore = true,
 				timeout = 500,
 			},
-			filters = { dotfiles = true },
+			filters = {
+				dotfiles = true,
+				custom = {
+					"**/*_templ.go",
+					"**/*_templ.txt",
+					"**/*.vgen.go",
+				},
+			},
 			renderer = {
 				root_folder_label = false,
 			},
@@ -770,6 +777,7 @@ require("lazy").setup({
 		"mfussenegger/nvim-dap",
 		dependencies = {
 			"rcarriga/nvim-dap-ui",
+			"nvim-neotest/nvim-nio",
 			"williamboman/mason.nvim",
 			"jay-babu/mason-nvim-dap.nvim",
 
@@ -847,5 +855,15 @@ require("lazy").setup({
 				},
 			}
 		end,
+	},
+
+	{
+		"akinsho/flutter-tools.nvim",
+		lazy = false,
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"stevearc/dressing.nvim", -- optional for vim.ui.select
+		},
+		config = true,
 	},
 })
