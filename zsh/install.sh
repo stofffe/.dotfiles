@@ -11,6 +11,8 @@ rm -f ~/.zshrc
 rm -f ~/.config/zsh/.zshrc
 ln -s ~/.dotfiles/zsh/.zshrc ~/.config/zsh/.zshrc
 
+# plugins
+
 mkdir -p ~/.dotfiles/zsh/plugins
 
 rm -rf ~/.dotfiles/zsh/powerlevel10k

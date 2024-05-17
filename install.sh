@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "--main begin--"
+
 mkdir -p ~/.config
 
 export XDG_CONFIG_HOME=$HOME/.config/
@@ -12,11 +14,4 @@ for d in *; do
     fi
 done
 
-# Platform specific installation
-if [[ $OSTYPE == "darwin"* ]]; then
-    echo "Mac specific installation"
-fi
-
-if [[ $OSTYPE == "linux-gnu"* ]]; then
-    echo "Linux specific installation"
-fi
+echo "--main done--"
