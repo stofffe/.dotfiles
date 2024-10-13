@@ -23,10 +23,19 @@ source ~/.dotfiles/zsh/exports.zsh
 # Aliases
 source ~/.dotfiles/zsh/aliases.zsh
 
+# Other
+source <(cargorun completion zsh)
+
 # Plugins
 source ~/.dotfiles/zsh/powerlevel10k/powerlevel10k.zsh-theme
 source ~/.dotfiles/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.dotfiles/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# Redirect ruby
+if [ -d "/opt/homebrew/opt/ruby/bin" ]; then
+  export PATH=/opt/homebrew/opt/ruby/bin:$PATH
+  export PATH=`gem environment gemdir`/bin:$PATH
+fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
