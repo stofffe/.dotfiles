@@ -350,7 +350,7 @@ require("lazy").setup({
 					},
 				},
 				emmet_ls = {
-					filetypes = { "html", "templ" },
+					filetypes = { "html", "templ", "typescriptreact" },
 				},
 				gopls = {},
 				lua_ls = {
@@ -436,6 +436,16 @@ require("lazy").setup({
 			vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
 				border = "rounded",
 			})
+		end,
+	},
+
+	{
+		"laytan/tailwind-sorter.nvim",
+		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-lua/plenary.nvim" },
+		build = "cd formatter && npm ci && npm run build",
+		config = true,
+		init = function()
+			require("tailwind-sorter").toggle_on_save()
 		end,
 	},
 
@@ -722,7 +732,8 @@ require("lazy").setup({
 				custom = {
 					"**/*_templ.go",
 					"**/*_templ.txt",
-					"**/*.vgen.go",
+					--"**/*.vgen.go",
+					"**/*.meta",
 				},
 			},
 			renderer = {
@@ -863,6 +874,9 @@ require("lazy").setup({
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"stevearc/dressing.nvim", -- optional for vim.ui.select
+		},
+		opts = {
+			lsp = { settings = { lineLength = 120 } },
 		},
 		config = true,
 	},
