@@ -5,7 +5,7 @@ let mapleader = " "
 
 inoremap jk <Esc>                   " exit insert mode
 noremap <leader>q :q<CR>            " quit
-noremap <leader>s :w<CR>            " save
+noremap <leader>w :w<CR>            " save
 inoremap <C-h> <left>               " move in insert
 inoremap <C-l> <right>              " move in insert
 inoremap {<cr> {<cr>}<c-o>O<Tab>    " auto braces
