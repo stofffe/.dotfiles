@@ -49,10 +49,67 @@ vim.keymap.set("i", "<C-h>", "<Left>", { desc = "Move left in insert mode" })
 vim.keymap.set("i", "<C-l>", "<Right>", { desc = "Move right in insert mode" })
 vim.keymap.set({ "n", "i" }, "<C-q>", "@q", { desc = "Execute default macro @q" })
 --vim.keymap.set("x", "p", [['_dP]], { desc = "Keep yank when pasting" })
+
+-- window navigation
 vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+
+-- quickfix
+vim.keymap.set("n", "<leader>cn", "<cmd>cnext<cr>", {})
+vim.keymap.set("n", "<leader>cp", "<cmd>cprev<cr>", {})
+vim.keymap.set("n", "<leader>co", "<cmd>copen<cr>", {})
+vim.keymap.set("n", "<leader>cc", "<cmd>cexpr []<cr><cmd>cclose<cr>", {})
+vim.keymap.set("n", "<leader>cd", ":cdo", {})
+
+-- terminal
+
+local active_term = -1
+vim.api.nvim_create_autocmd("TermOpen", {
+	group = vim.api.nvim_create_augroup("terminal-opts", { clear = true }),
+	callback = function(info)
+		vim.opt.number = false
+		vim.opt.relativenumber = false
+
+		active_term = info.buf
+	end,
+})
+
+vim.keymap.set("n", "<leader>t", function()
+	vim.cmd.buffer(active_term)
+end, {})
+-- vim.keymap.set("n", "<leader>tof", vim.cmd.terminal, {})
+-- vim.keymap.set("t", "<leader>q", "<cmd>q<cr>", {})
+
+vim.keymap.set("t", "<leader>t", vim.cmd.q, {})
+
+vim.keymap.set("n", "<leader>t", function()
+	local buf = vim.api.nvim_get_current_buf()
+
+	if buf == active_term then
+		vim.cmd.q()
+		return
+	end
+
+	if active_term == -1 then
+		vim.cmd.vnew()
+		vim.cmd.term()
+		vim.cmd.wincmd("J")
+		vim.api.nvim_win_set_height(0, 15)
+		vim.cmd.startinsert()
+	else
+		vim.cmd.vnew()
+		vim.cmd.buffer(active_term)
+		vim.cmd.wincmd("J")
+		vim.api.nvim_win_set_height(0, 15)
+		vim.cmd.startinsert()
+	end
+end, {})
+
+vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], {})
+vim.keymap.set("t", "jk", [[<C-\><C-n>]], {})
+
 -- Mac specific
 vim.keymap.set("n", "√", "<cmd>move +1<CR>", { desc = "Move line up" })
 vim.keymap.set("n", "ª", "<cmd>move -2<CR>", { desc = "Move line down" })
@@ -146,7 +203,7 @@ require("lazy").setup({
 		},
 		config = function(_, opts)
 			require("gitsigns").setup(opts)
-			vim.keymap.set("n", "<leader>t", "<cmd>Gitsigns toggle_signs<CR>", { desc = "Toggle Gitsigns" })
+			-- vim.keymap.set("n", "<leader>t", "<cmd>Gitsigns toggle_signs<CR>", { desc = "Toggle Gitsigns" })
 		end,
 	},
 
@@ -732,8 +789,9 @@ require("lazy").setup({
 				custom = {
 					"**/*_templ.go",
 					"**/*_templ.txt",
-					--"**/*.vgen.go",
+					"**/*.vgen.go",
 					"**/*.meta",
+					"**/*.asset",
 				},
 			},
 			renderer = {
@@ -776,10 +834,10 @@ require("lazy").setup({
 		lazy = false,
 		opts = {
 			override = {
-				rust = {
-					icon = "",
-					name = "Rust",
-				},
+				-- rust = {
+				-- 	icon = "",
+				-- 	name = "Rust",
+				-- },
 			},
 		},
 	},
@@ -879,5 +937,8 @@ require("lazy").setup({
 			lsp = { settings = { lineLength = 120 } },
 		},
 		config = true,
+		init = function()
+			-- vim.keymap.set("n", "<leader>t", "<cmd>FlutterLogToggle<cr>", { desc = "Toggle flutter logs" })
+		end,
 	},
 })
