@@ -93,13 +93,13 @@ vim.keymap.set("n", "<leader>t", function()
 	end
 
 	if active_term == -1 then
-		vim.cmd.vnew()
+		vim.cmd.split()
 		vim.cmd.term()
 		vim.cmd.wincmd("J")
 		vim.api.nvim_win_set_height(0, 15)
 		vim.cmd.startinsert()
 	else
-		vim.cmd.vnew()
+		vim.cmd.split()
 		vim.cmd.buffer(active_term)
 		vim.cmd.wincmd("J")
 		vim.api.nvim_win_set_height(0, 15)
