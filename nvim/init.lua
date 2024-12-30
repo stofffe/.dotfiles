@@ -79,28 +79,36 @@ vim.api.nvim_create_autocmd("TermOpen", {
 vim.keymap.set("n", "<leader>t", function()
 	vim.cmd.buffer(active_term)
 end, {})
--- vim.keymap.set("n", "<leader>tof", vim.cmd.terminal, {})
--- vim.keymap.set("t", "<leader>q", "<cmd>q<cr>", {})
 
 vim.keymap.set("t", "<leader>t", vim.cmd.q, {})
 
 vim.keymap.set("n", "<leader>t", function()
-	local buf = vim.api.nvim_get_current_buf()
+	local terminal_open = false
+	local terminal_win = -1
 
-	if buf == active_term then
-		vim.cmd.q()
-		return
+	local open_win = vim.api.nvim_list_wins()
+	for _, win in pairs(open_win) do
+		local bufnr = vim.api.nvim_win_get_buf(win)
+		if bufnr == active_term then
+			terminal_open = true
+			terminal_win = win
+		end
 	end
 
-	if active_term == -1 then
-		vim.cmd.split()
-		vim.cmd.term()
-		vim.cmd.wincmd("J")
-		vim.api.nvim_win_set_height(0, 15)
-		vim.cmd.startinsert()
+	if terminal_open then
+		if vim.api.nvim_get_current_win() == terminal_win then
+			vim.api.nvim_win_close(terminal_win, true)
+		else
+			vim.api.nvim_set_current_win(terminal_win)
+		end
 	else
-		vim.cmd.split()
-		vim.cmd.buffer(active_term)
+		if active_term == -1 then
+			vim.cmd.split()
+			vim.cmd.term()
+		else
+			vim.cmd.split()
+			vim.cmd.buffer(active_term)
+		end
 		vim.cmd.wincmd("J")
 		vim.api.nvim_win_set_height(0, 15)
 		vim.cmd.startinsert()
@@ -315,6 +323,9 @@ require("lazy").setup({
 			--{ "mrcjkb/rustaceanvim", version = "^4", ft = { "rust" } },
 		},
 		config = function()
+			-- requires to have glasgow downloaded
+			require("lspconfig").glasgow.setup({})
+
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
 				callback = function(event)
@@ -443,47 +454,6 @@ require("lazy").setup({
 						server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
 						require("lspconfig")[server_name].setup(server)
 					end,
-
-					-- ["rust_analyzer"] = function()
-					-- 	vim.g.rustaceanvim = function()
-					-- 		HOME_PATH = os.getenv("HOME") .. "/"
-					-- 		MASON_PATH = HOME_PATH .. ".local/share/nvim/mason/packages/"
-					-- 		local codelldb_path = MASON_PATH .. "codelldb/extension/adapter/codelldb"
-					-- 		local liblldb_path = MASON_PATH .. "codelldb/extension/lldb/lib/liblldb.dylib"
-					--
-					-- 		local cfg = require("rustaceanvim.config")
-					-- 		return {
-					-- 			tools = {
-					-- 				hover_actions = {
-					-- 					replace_builtin_hover = false,
-					-- 				},
-					-- 			},
-					-- 			dap = {
-					-- 				adapter = cfg.get_codelldb_adapter(codelldb_path, liblldb_path),
-					-- 			},
-					-- 			server = {
-					-- 				on_attach = function(client, bufnr) end,
-					-- 				default_settings = {
-					-- 					-- rust-analyzer language server configuration
-					-- 					["rust-analyzer"] = {
-					-- 						checkOnSave = {
-					-- 							command = "clippy",
-					-- 							allFeatures = true,
-					-- 							overrideCommand = {
-					-- 								"cargo",
-					-- 								"clippy",
-					-- 								"--workspace",
-					-- 								"--message-format=json",
-					-- 								"--all-targets",
-					-- 								"--all-features",
-					-- 							},
-					-- 						},
-					-- 					},
-					-- 				},
-					-- 			},
-					-- 		}
-					-- 	end
-					-- end,
 				},
 			})
 
@@ -741,7 +711,7 @@ require("lazy").setup({
 					init_selection = "<c-x>",
 					node_incremental = "<c-x>",
 					--[[ scope_incremental = '<c-s>', ]]
-					--node_decremental = "<c-X>",
+					node_decremental = "<c-s>",
 				},
 			},
 		},
@@ -791,7 +761,7 @@ require("lazy").setup({
 					"**/*_templ.txt",
 					"**/*.vgen.go",
 					"**/*.meta",
-					"**/*.asset",
+					-- "**/*.asset",
 				},
 			},
 			renderer = {
@@ -925,7 +895,6 @@ require("lazy").setup({
 			}
 		end,
 	},
-
 	{
 		"akinsho/flutter-tools.nvim",
 		lazy = false,
