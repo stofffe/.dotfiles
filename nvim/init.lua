@@ -319,6 +319,7 @@ require("lazy").setup({
 			{ "WhoIsSethDaniel/mason-tool-installer.nvim" },
 			{ "j-hui/fidget.nvim", opts = {} }, -- status updates
 			{ "folke/neodev.nvim", opts = {} }, -- lua lsp config
+			{ "Hoffs/omnisharp-extended-lsp.nvim" },
 			-- { "simrat39/rust-tools.nvim" },
 			--{ "mrcjkb/rustaceanvim", version = "^4", ft = { "rust" } },
 		},
@@ -354,18 +355,18 @@ require("lazy").setup({
 					map("gl", vim.diagnostic.open_float, "Open float")
 
 					-- Highlight all occurances of word under cursor
-					local client = vim.lsp.get_client_by_id(event.data.client_id)
-					if client and client.server_capabilities.documentHighlightProvider then
-						vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-							buffer = event.buf,
-							callback = vim.lsp.buf.document_highlight,
-						})
-
-						vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-							buffer = event.buf,
-							callback = vim.lsp.buf.clear_references,
-						})
-					end
+					-- local client = vim.lsp.get_client_by_id(event.data.client_id)
+					-- if client and client.server_capabilities.documentHighlightProvider then
+					-- 	vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+					-- 		buffer = event.buf,
+					-- 		callback = vim.lsp.buf.document_highlight,
+					-- 	})
+					--
+					-- 	vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+					-- 		buffer = event.buf,
+					-- 		callback = vim.lsp.buf.clear_references,
+					-- 	})
+					-- end
 				end,
 			})
 
@@ -385,20 +386,7 @@ require("lazy").setup({
 						vim.keymap.set("n", "<leader>h", "<cmd>ClangdSwitchSourceHeader<CR>", opts)
 					end,
 				},
-				templ = {
-					on_attach = function(_, bufnr)
-						local opts = { silent = true, buffer = bufnr }
-						vim.keymap.set("n", "<leader>h", function()
-							local path = vim.api.nvim_buf_get_name(bufnr)
-							local gen_path = path:gsub(".templ", "_templ.go", 1)
-							print(path, gen_path)
-							vim.cmd("edit " .. gen_path)
-							vim.cmd("edit " .. path)
-						end, opts)
-					end,
-				},
 				rust_analyzer = {
-					tools = {},
 					settings = {
 						-- rust-analyzer language server configuration
 						["rust-analyzer"] = {
@@ -417,14 +405,45 @@ require("lazy").setup({
 						},
 					},
 				},
-				emmet_ls = {
-					filetypes = { "html", "templ", "typescriptreact" },
+				omnisharp = {
+					on_attach = function(client, bufnr)
+						vim.keymap.set("n", "gd", function()
+							require("omnisharp_extended").telescope_lsp_definition()
+						end, { buffer = bufnr, desc = "[g]oto [D]efinition" })
+						vim.keymap.set("n", "gr", function()
+							require("omnisharp_extended").telescope_lsp_references()
+						end, { buffer = bufnr, desc = "[g]oto [r]eferences" })
+						vim.keymap.set("n", "gD", function()
+							require("omnisharp_extended").telescope_lsp_type_definition()
+						end, { buffer = bufnr, desc = "[g]oto type [D]efiniton" })
+						vim.keymap.set("n", "gi", function()
+							require("omnisharp_extended").telescope_lsp_implementation()
+						end, { buffer = bufnr, desc = "[g]oto [i]mplementation" })
+					end,
+					-- cmd = { "C:/Users/chan/AppData/Local/nvim-data/mason/bin/OmniSharp.cmd" },
+					root_dir = vim.fs.root(0, ".csproj"),
+					handlers = {
+						["textDocument/definition"] = require("omnisharp_extended").handler,
+					},
+					settings = {
+						FormattingOptions = {
+							EnableEditorConfigSupport = true,
+						},
+						MsBuild = {
+							-- LoadProjectsOnDemand = true,
+							LoadProjectsOnDemand = false,
+						},
+						RoslynExtensionsOptions = {
+							EnableAnalyzersSupport = true,
+							EnableImportCompletion = true,
+							AnalyzeOpenDocumentsOnly = false,
+						},
+						Sdk = {
+							IncludePrereleases = true,
+						},
+					},
 				},
-				gopls = {},
 				lua_ls = {
-					-- cmd = {...},
-					-- filetypes { ...},
-					-- capabilities = {},
 					settings = {
 						Lua = {
 							completion = {
@@ -435,13 +454,27 @@ require("lazy").setup({
 						},
 					},
 				},
+				templ = {
+					on_attach = function(_, bufnr)
+						local opts = { silent = true, buffer = bufnr }
+						vim.keymap.set("n", "<leader>h", function()
+							local path = vim.api.nvim_buf_get_name(bufnr)
+							local gen_path = path:gsub(".templ", "_templ.go", 1)
+							print(path, gen_path)
+							vim.cmd("edit " .. gen_path)
+							vim.cmd("edit " .. path)
+						end, opts)
+					end,
+				},
+				stylua = {},
+				-- emmet_ls = {
+				-- 	filetypes = { "html", "templ", "typescriptreact" },
+				-- },
+				-- gopls = {},
 			}
 
 			require("mason").setup()
 			local ensure_installed = vim.tbl_keys(servers or {})
-			vim.list_extend(ensure_installed, {
-				"stylua", -- Used to format lua code
-			})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
 			require("mason-lspconfig").setup({
@@ -457,12 +490,37 @@ require("lazy").setup({
 				},
 			})
 
-			vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-				border = "rounded",
-			})
-			vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-				border = "rounded",
-			})
+			vim.lsp.handlers["textDocument/definition"] = function(err, result, context, config)
+				print("Definition")
+			end
+
+			-- local default_publish = vim.lsp.handlers["textDocument/publishDiagnostics"]
+			-- vim.lsp.handlers["textDocument/publishDiagnostics"] = function(err, result, context, config)
+			-- 	local filtered_diagnostics = {}
+			--
+			-- 	-- HARDCODED
+			-- 	-- local ignored_diagnostic_path = ""
+			-- 	local ignored_diagnostic_path_pattern = ""
+			--
+			-- 	for _, value in ipairs(result.diagnostics) do
+			-- 		local has_uri = value.relatedInformation[1]
+			-- 			and value.relatedInformation[1].location
+			-- 			and value.relatedInformation[1].location.uri
+			-- 		local same_file = not has_uri
+			--
+			-- 		if same_file then
+			-- 			table.insert(filtered_diagnostics, value)
+			-- 		else
+			-- 			local uri = value.relatedInformation[1].location.uri
+			-- 			if not uri:find(ignored_diagnostic_path_pattern, 1, false) then
+			-- 				table.insert(filtered_diagnostics, value)
+			-- 			end
+			-- 		end
+			-- 	end
+			--
+			-- 	result.diagnostics = filtered_diagnostics
+			-- 	default_publish(err, result, context, config)
+			-- end
 		end,
 	},
 
@@ -702,7 +760,9 @@ require("lazy").setup({
 			auto_install = true,
 			highlight = {
 				enable = true,
+				-- enable = false,
 				additional_vim_regex_highlighting = {},
+				disable = { "markdown", "cpp", "c_sharp" }, ---TODO: quick fix for windos
 			},
 			indent = { enable = true, disable = {} },
 			incremental_selection = {
@@ -830,9 +890,7 @@ require("lazy").setup({
 			require("mason-nvim-dap").setup({
 				automatic_setup = true, -- Best effort
 				handlers = {},
-				ensure_installed = {
-					"delve",
-				},
+				ensure_installed = {},
 			})
 
 			vim.keymap.set("n", "<F5>", dap.continue, { desc = "Debug: Start/Continue" })
