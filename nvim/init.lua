@@ -333,13 +333,11 @@ require("lazy").setup({
 			{ "WhoIsSethDaniel/mason-tool-installer.nvim" },
 			{ "j-hui/fidget.nvim", opts = {} }, -- status updates
 			{ "folke/neodev.nvim", opts = {} }, -- lua lsp config
-			{ "Hoffs/omnisharp-extended-lsp.nvim" },
-			-- { "simrat39/rust-tools.nvim" },
-			--{ "mrcjkb/rustaceanvim", version = "^4", ft = { "rust" } },
 		},
 		config = function()
 			-- requires to have glasgow downloaded
 			require("lspconfig").glasgow.setup({})
+			-- require("lspconfig").roslyn.setup({})
 
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
@@ -419,44 +417,48 @@ require("lazy").setup({
 						},
 					},
 				},
-				omnisharp = {
-					on_attach = function(client, bufnr)
-						vim.keymap.set("n", "gd", function()
-							require("omnisharp_extended").telescope_lsp_definition()
-						end, { buffer = bufnr, desc = "[g]oto [D]efinition" })
-						vim.keymap.set("n", "gr", function()
-							require("omnisharp_extended").telescope_lsp_references()
-						end, { buffer = bufnr, desc = "[g]oto [r]eferences" })
-						vim.keymap.set("n", "gD", function()
-							require("omnisharp_extended").telescope_lsp_type_definition()
-						end, { buffer = bufnr, desc = "[g]oto type [D]efiniton" })
-						vim.keymap.set("n", "gi", function()
-							require("omnisharp_extended").telescope_lsp_implementation()
-						end, { buffer = bufnr, desc = "[g]oto [i]mplementation" })
-					end,
-					-- cmd = { "C:/Users/chan/AppData/Local/nvim-data/mason/bin/OmniSharp.cmd" },
-					root_dir = vim.fs.root(0, ".csproj"),
-					handlers = {
-						["textDocument/definition"] = require("omnisharp_extended").handler,
-					},
-					settings = {
-						FormattingOptions = {
-							EnableEditorConfigSupport = true,
-						},
-						MsBuild = {
-							-- LoadProjectsOnDemand = true,
-							LoadProjectsOnDemand = false,
-						},
-						RoslynExtensionsOptions = {
-							EnableAnalyzersSupport = true,
-							EnableImportCompletion = true,
-							AnalyzeOpenDocumentsOnly = false,
-						},
-						Sdk = {
-							IncludePrereleases = true,
-						},
-					},
-				},
+				-- omnisharp = {
+				-- 	on_attach = function(client, bufnr)
+				-- 		vim.keymap.set("n", "gd", function()
+				-- 			require("omnisharp_extended").telescope_lsp_definition()
+				-- 		end, { buffer = bufnr, desc = "[g]oto [D]efinition" })
+				-- 		vim.keymap.set("n", "gr", function()
+				-- 			require("omnisharp_extended").telescope_lsp_references()
+				-- 		end, { buffer = bufnr, desc = "[g]oto [r]eferences" })
+				-- 		vim.keymap.set("n", "gD", function()
+				-- 			require("omnisharp_extended").telescope_lsp_type_definition()
+				-- 		end, { buffer = bufnr, desc = "[g]oto type [D]efiniton" })
+				-- 		vim.keymap.set("n", "gi", function()
+				-- 			require("omnisharp_extended").telescope_lsp_implementation()
+				-- 		end, { buffer = bufnr, desc = "[g]oto [i]mplementation" })
+				-- 	end,
+				-- 	-- cmd = { "C:/Users/chan/AppData/Local/nvim-data/mason/bin/OmniSharp.cmd" },
+				-- 	root_dir = vim.fs.root(0, ".csproj"),
+				-- 	handlers = {
+				-- 		["textDocument/definition"] = require("omnisharp_extended").handler,
+				-- 	},
+				-- 	settings = {
+				-- 		FormattingOptions = {
+				-- 			EnableEditorConfigSupport = true,
+				-- 		},
+				-- 		MsBuild = {
+				-- 			-- LoadProjectsOnDemand = true,
+				-- 			LoadProjectsOnDemand = false,
+				-- 		},
+				-- 		RoslynExtensionsOptions = {
+				-- 			EnableAnalyzersSupport = false,
+				-- 			-- EnableAnalyzersSupport = true,
+				-- 			EnableImportCompletion = true,
+				-- 			AnalyzeOpenDocumentsOnly = false,
+				-- 		},
+				-- 		Sdk = {
+				-- 			IncludePrereleases = true,
+				-- 		},
+				-- 		-- FileOptions = {
+				-- 		-- 	SupressHiddenDiagnostics = { "IDE0090" },
+				-- 		-- },
+				-- 	},
+				-- },
 				lua_ls = {
 					settings = {
 						Lua = {
@@ -487,7 +489,12 @@ require("lazy").setup({
 				-- gopls = {},
 			}
 
-			require("mason").setup()
+			require("mason").setup({
+				registries = {
+					"github:Crashdummyy/mason-registry", -- for roslyn
+					"github:mason-org/mason-registry",
+				},
+			})
 			local ensure_installed = vim.tbl_keys(servers or {})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -967,6 +974,35 @@ require("lazy").setup({
 			}
 		end,
 	},
+
+	-- could be replaced with editconfig
+
+	-- {
+	-- 	"m-gail/diagnostic_manipulation.nvim",
+	-- 	init = function()
+	-- 		local blacklisted_codes = {
+	-- 			csharp = {
+	-- 				"IDE0090", -- new can be simplified
+	-- 			},
+	-- 		}
+	--
+	-- 		require("diagnostic_manipulation").setup({
+	-- 			blacklist = {
+	-- 				function(diagnostic)
+	-- 					print(vim.inspect(diagnostic))
+	-- 					for source, codes in pairs(blacklisted_codes) do
+	-- 						if diagnostic.source == source and vim.tbl_contains(codes, diagnostic.code) then
+	-- 							return true
+	-- 						end
+	-- 					end
+	-- 					return false
+	-- 				end,
+	-- 			},
+	-- 			whitelist = {},
+	-- 		})
+	-- 	end,
+	-- },
+
 	{
 		"akinsho/flutter-tools.nvim",
 		lazy = false,
@@ -981,5 +1017,13 @@ require("lazy").setup({
 		init = function()
 			-- vim.keymap.set("n", "<leader>t", "<cmd>FlutterLogToggle<cr>", { desc = "Toggle flutter logs" })
 		end,
+	},
+
+	{
+		"seblyng/roslyn.nvim",
+		dependencies = { "williamboman/mason.nvim" },
+		opts = {
+			-- your configuration comes here; leave empty for default settings
+		},
 	},
 })
