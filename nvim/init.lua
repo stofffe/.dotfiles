@@ -185,6 +185,15 @@ vim.diagnostic.config({
 	},
 })
 
+-- Global floating window border for all LSP floats
+vim.lsp.util.open_floating_preview = (function(orig)
+	return function(contents, syntax, opts, ...)
+		opts = opts or {}
+		opts.border = opts.border or "rounded"
+		return orig(contents, syntax, opts, ...)
+	end
+end)(vim.lsp.util.open_floating_preview)
+
 -- Install Lazy plugin manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -238,6 +247,11 @@ require("lazy").setup({
 					prompt_prefix = " ",
 					selection_caret = " ",
 					path_display = { "smart" },
+					-- preview = {
+					-- 	treesitter = {
+					-- 		disable = { "cpp", "hpp", "c", "h" }, -- TODO: temp solution on windows
+					-- 	},
+					-- },
 
 					mappings = {
 						i = {
@@ -355,18 +369,18 @@ require("lazy").setup({
 					map("gl", vim.diagnostic.open_float, "Open float")
 
 					-- Highlight all occurances of word under cursor
-					-- local client = vim.lsp.get_client_by_id(event.data.client_id)
-					-- if client and client.server_capabilities.documentHighlightProvider then
-					-- 	vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-					-- 		buffer = event.buf,
-					-- 		callback = vim.lsp.buf.document_highlight,
-					-- 	})
-					--
-					-- 	vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-					-- 		buffer = event.buf,
-					-- 		callback = vim.lsp.buf.clear_references,
-					-- 	})
-					-- end
+					local client = vim.lsp.get_client_by_id(event.data.client_id)
+					if client and client.server_capabilities.documentHighlightProvider then
+						vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+							buffer = event.buf,
+							callback = vim.lsp.buf.document_highlight,
+						})
+
+						vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+							buffer = event.buf,
+							callback = vim.lsp.buf.clear_references,
+						})
+					end
 				end,
 			})
 
@@ -490,9 +504,9 @@ require("lazy").setup({
 				},
 			})
 
-			vim.lsp.handlers["textDocument/definition"] = function(err, result, context, config)
-				print("Definition")
-			end
+			-- vim.lsp.handlers["textDocument/definition"] = function(err, result, context, config)
+			-- 	print("Definition")
+			-- end
 
 			-- local default_publish = vim.lsp.handlers["textDocument/publishDiagnostics"]
 			-- vim.lsp.handlers["textDocument/publishDiagnostics"] = function(err, result, context, config)
