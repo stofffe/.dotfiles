@@ -124,6 +124,12 @@ vim.keymap.set("n", "ª", "<cmd>move -2<CR>", { desc = "Move line down" })
 vim.cmd("vnoremap √ :m '>+1<CR>gv=gv")
 vim.cmd("vnoremap ª :m '<-2<CR>gv=gv")
 
+-- Windows specific
+vim.keymap.set("n", "<M-j>", "<cmd>move +1<CR>", { desc = "Move line up" })
+vim.keymap.set("n", "<M-k>", "<cmd>move -2<CR>", { desc = "Move line down" })
+vim.keymap.set("v", "<M-j>", ":m '>+1<CR>gv=gv", { desc = "Move selection down", silent = true })
+vim.keymap.set("v", "<M-k>", ":m '<-2<CR>gv=gv", { desc = "Move selection up", silent = true })
+
 --
 -- Commands
 --
