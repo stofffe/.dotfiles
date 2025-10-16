@@ -34,16 +34,31 @@ vim.opt.hlsearch = false
 vim.opt.swapfile = false
 vim.opt.backup = false
 
+vim.opt.shell = "pwsh.exe"
+
 --
 -- Keymaps
 --
+
+local open_native = function(path)
+	if vim.fn.has("win32") == 1 then
+		vim.fn.jobstart({ "cmd", "/C", "start", "", path }, { detach = true })
+	elseif vim.fn.has("mac") == 1 then
+		vim.fn.jobstart({ "open", path }, { detach = true })
+	else
+		vim.fn.jobstart({ "xdg-open", path }, { detach = true })
+	end
+end
 
 vim.keymap.set("n", "<leader>s", "<Nop>", {})
 vim.keymap.set("n", "<leader>w", ":w<CR>", { desc = "Save file" })
 vim.keymap.set("n", "<leader>q", ":q<CR>", { desc = "Quit file" })
 vim.keymap.set("n", "<leader>f", "<cmd>Format<CR>", { desc = "Format file" })
 vim.keymap.set("n", "<leader>v", "<cmd>vsplit<CR>", { desc = "Split window horizontally" })
-vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<CR><cmd>NvimTreeRefresh<CR>", { desc = "Toggle file explorer" }) -- Refresh and toggle
+-- vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<CR><cmd>NvimTreeRefresh<CR>", { desc = "Toggle file explorer" }) -- Refresh and toggle
+-- vim.keymap.set("n", "<leader>e", "<cmd>Telescope file_browser<CR>", { desc = "Toggle file explorer" }) -- Refresh and toggle
+-- vim.keymap.set("n", "<leader>e", "<cmd>lua MiniFiles.open()<CR>", { desc = "Toggle file explorer" }) -- Refresh and toggle
+vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "Toggle file explorer" }) -- Refresh and toggle
 vim.keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 vim.keymap.set("i", "<C-h>", "<Left>", { desc = "Move left in insert mode" })
 vim.keymap.set("i", "<C-l>", "<Right>", { desc = "Move right in insert mode" })
@@ -56,12 +71,68 @@ vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right win
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 
+vim.keymap.set("n", "<Up>", ":resize +2<CR>", {})
+vim.keymap.set("n", "<Down>", ":resize -2<CR>", {})
+vim.keymap.set("n", "<Left>", ":vertical resize -2<CR>", {})
+vim.keymap.set("n", "<Right>", ":vertical resize +2<CR>", {})
+
 -- quickfix
 vim.keymap.set("n", "<leader>cn", "<cmd>cnext<cr>", {})
 vim.keymap.set("n", "<leader>cp", "<cmd>cprev<cr>", {})
 vim.keymap.set("n", "<leader>co", "<cmd>copen<cr>", {})
 vim.keymap.set("n", "<leader>cc", "<cmd>cexpr []<cr><cmd>cclose<cr>", {})
 vim.keymap.set("n", "<leader>cd", ":cdo", {})
+
+vim.keymap.set("n", "<leader>o", function()
+	local path = vim.fn.expand("%:p")
+	open_native(path)
+end, {})
+
+vim.api.nvim_create_user_command("GCCount", function()
+	print("Memory used (KB) " .. collectgarbage("count"))
+end, {})
+
+vim.api.nvim_create_user_command("GCCollect", function()
+	collectgarbage("collect")
+end, {})
+
+-- Toggle between two suffixes in the current buffer
+local function toggle_suffix(suffix_a, suffix_b)
+	local file = vim.fn.expand("%:p") -- full path
+	local target = nil
+
+	if file:match("%." .. suffix_a .. "$") then
+		-- suffix_a -> suffix_b
+		target = file:gsub("%." .. suffix_a .. "$", "." .. suffix_b)
+	elseif file:match("%." .. suffix_b .. "$") then
+		-- suffix_b -> suffix_a
+		target = file:gsub("%." .. suffix_b .. "$", "." .. suffix_a)
+	else
+		vim.notify("Not a " .. suffix_a .. " or " .. suffix_b .. " file", vim.log.levels.WARN)
+		return
+	end
+
+	if vim.fn.filereadable(target) == 1 then
+		vim.cmd("edit " .. target)
+	else
+		vim.notify("No matching file found: " .. target, vim.log.levels.WARN)
+	end
+end
+
+-- setup buffer-local keymap for two suffixes
+local function setup_toggle_file_keymap(suffix_a, suffix_b, key)
+	vim.api.nvim_create_autocmd("BufEnter", {
+		pattern = { "*." .. suffix_a, "*." .. suffix_b },
+		callback = function()
+			vim.keymap.set("n", key or "<leader>h", function()
+				toggle_suffix(suffix_a, suffix_b)
+			end, { buffer = true, desc = "Toggle between " .. suffix_a .. " and " .. suffix_b, silent = true })
+		end,
+	})
+end
+
+-- Example usage for XAML and XAML.CS
+setup_toggle_file_keymap("xaml", "xaml.cs", "<leader>h")
 
 -- terminal
 
@@ -144,7 +215,11 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 -- Some filetypes are not set by default
-local unset_ft_groups = { wgsl = "wgsl", templ = "templ" }
+local unset_ft_groups = {
+	wgsl = "wgsl",
+	templ = "templ",
+	xaml = "xml",
+}
 local set_ft_group = vim.api.nvim_create_augroup("set_filetype", { clear = true })
 for suffix, filetype in pairs(unset_ft_groups) do
 	vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
@@ -240,11 +315,15 @@ require("lazy").setup({
 			{ "nvim-tree/nvim-web-devicons" },
 			{
 				"nvim-telescope/telescope-fzf-native.nvim",
-				build = "make", -- Update plugin when neccesary
-				cond = function()
-					return vim.fn.executable("make") == 1
-				end,
+				build = "cmake -S. -Bbuild -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release",
 			},
+			-- {
+			-- 	"nvim-telescope/telescope-fzf-native.nvim",
+			-- 	build = "make", -- Update plugin when neccesary
+			-- 	cond = function()
+			-- 		return vim.fn.executable("make") == 1
+			-- 	end,
+			-- },
 		},
 		config = function()
 			local actions = require("telescope.actions")
@@ -253,11 +332,6 @@ require("lazy").setup({
 					prompt_prefix = " ",
 					selection_caret = " ",
 					path_display = { "smart" },
-					-- preview = {
-					-- 	treesitter = {
-					-- 		disable = { "cpp", "hpp", "c", "h" }, -- TODO: temp solution on windows
-					-- 	},
-					-- },
 
 					mappings = {
 						i = {
@@ -267,8 +341,8 @@ require("lazy").setup({
 							["<C-j>"] = actions.move_selection_next,
 							["<C-k>"] = actions.move_selection_previous,
 
-							["<C-x>"] = actions.select_horizontal,
-							["<C-v>"] = actions.select_vertical,
+							["<C-h>"] = actions.select_horizontal,
+							["<C-s>"] = actions.select_vertical, -- should be v but gets blocked on windows
 
 							["<C-u>"] = actions.preview_scrolling_up,
 							["<C-d>"] = actions.preview_scrolling_down,
@@ -292,8 +366,15 @@ require("lazy").setup({
 			})
 
 			-- Enable telescope extensions, if they are installed
-			pcall(require("telescope").load_extension, "fzf")
-			pcall(require("telescope").load_extension, "ui-select")
+			if not pcall(require("telescope").load_extension, "fzf") then
+				print("failed to load fzf")
+			end
+			if not pcall(require("telescope").load_extension, "ui-select") then
+				print("failed to load ui-select")
+			end
+			-- if not pcall(require("telescope").load_extension, "file_browser") then
+			-- 	print("failed to load file_browser")
+			-- end
 
 			-- See `:help telescope.builtin`
 			local builtin = require("telescope.builtin")
@@ -423,48 +504,6 @@ require("lazy").setup({
 						},
 					},
 				},
-				-- omnisharp = {
-				-- 	on_attach = function(client, bufnr)
-				-- 		vim.keymap.set("n", "gd", function()
-				-- 			require("omnisharp_extended").telescope_lsp_definition()
-				-- 		end, { buffer = bufnr, desc = "[g]oto [D]efinition" })
-				-- 		vim.keymap.set("n", "gr", function()
-				-- 			require("omnisharp_extended").telescope_lsp_references()
-				-- 		end, { buffer = bufnr, desc = "[g]oto [r]eferences" })
-				-- 		vim.keymap.set("n", "gD", function()
-				-- 			require("omnisharp_extended").telescope_lsp_type_definition()
-				-- 		end, { buffer = bufnr, desc = "[g]oto type [D]efiniton" })
-				-- 		vim.keymap.set("n", "gi", function()
-				-- 			require("omnisharp_extended").telescope_lsp_implementation()
-				-- 		end, { buffer = bufnr, desc = "[g]oto [i]mplementation" })
-				-- 	end,
-				-- 	-- cmd = { "C:/Users/chan/AppData/Local/nvim-data/mason/bin/OmniSharp.cmd" },
-				-- 	root_dir = vim.fs.root(0, ".csproj"),
-				-- 	handlers = {
-				-- 		["textDocument/definition"] = require("omnisharp_extended").handler,
-				-- 	},
-				-- 	settings = {
-				-- 		FormattingOptions = {
-				-- 			EnableEditorConfigSupport = true,
-				-- 		},
-				-- 		MsBuild = {
-				-- 			-- LoadProjectsOnDemand = true,
-				-- 			LoadProjectsOnDemand = false,
-				-- 		},
-				-- 		RoslynExtensionsOptions = {
-				-- 			EnableAnalyzersSupport = false,
-				-- 			-- EnableAnalyzersSupport = true,
-				-- 			EnableImportCompletion = true,
-				-- 			AnalyzeOpenDocumentsOnly = false,
-				-- 		},
-				-- 		Sdk = {
-				-- 			IncludePrereleases = true,
-				-- 		},
-				-- 		-- FileOptions = {
-				-- 		-- 	SupressHiddenDiagnostics = { "IDE0090" },
-				-- 		-- },
-				-- 	},
-				-- },
 				lua_ls = {
 					settings = {
 						Lua = {
@@ -489,6 +528,21 @@ require("lazy").setup({
 					end,
 				},
 				stylua = {},
+				lemminx = {
+					on_attach = function()
+						-- vim.keymap.set(
+						-- 	"n",
+						-- 	"<leader>h",
+						-- 	"<cmd>ToggleXamlCs<CR>",
+						-- 	{ desc = "Toggle between XAML and code-behind" }
+						-- )
+					end,
+				},
+				-- roslyn = {
+				-- 	on_attach = function()
+				-- 		print("ROLSYn")
+				-- 	end,
+				-- },
 				-- emmet_ls = {
 				-- 	filetypes = { "html", "templ", "typescriptreact" },
 				-- },
@@ -516,38 +570,6 @@ require("lazy").setup({
 					end,
 				},
 			})
-
-			-- vim.lsp.handlers["textDocument/definition"] = function(err, result, context, config)
-			-- 	print("Definition")
-			-- end
-
-			-- local default_publish = vim.lsp.handlers["textDocument/publishDiagnostics"]
-			-- vim.lsp.handlers["textDocument/publishDiagnostics"] = function(err, result, context, config)
-			-- 	local filtered_diagnostics = {}
-			--
-			-- 	-- HARDCODED
-			-- 	-- local ignored_diagnostic_path = ""
-			-- 	local ignored_diagnostic_path_pattern = ""
-			--
-			-- 	for _, value in ipairs(result.diagnostics) do
-			-- 		local has_uri = value.relatedInformation[1]
-			-- 			and value.relatedInformation[1].location
-			-- 			and value.relatedInformation[1].location.uri
-			-- 		local same_file = not has_uri
-			--
-			-- 		if same_file then
-			-- 			table.insert(filtered_diagnostics, value)
-			-- 		else
-			-- 			local uri = value.relatedInformation[1].location.uri
-			-- 			if not uri:find(ignored_diagnostic_path_pattern, 1, false) then
-			-- 				table.insert(filtered_diagnostics, value)
-			-- 			end
-			-- 		end
-			-- 	end
-			--
-			-- 	result.diagnostics = filtered_diagnostics
-			-- 	default_publish(err, result, context, config)
-			-- end
 		end,
 	},
 
@@ -776,7 +798,83 @@ require("lazy").setup({
 					["`"] = { action = "closeopen", pair = "``", neigh_pattern = "[^\\].", register = { cr = false } },
 				},
 			})
+			-- require("mini.files").setup({
+			-- 	mappings = {
+			-- 		close = "<leader>e",
+			-- 		go_in = "L",
+			-- 		go_in_plus = "l",
+			-- 	},
+			-- 	on_open = function() end,
+			-- })
+			-- vim.api.nvim_create_user_command("MiniFilesOpenHereTemp", function()
+			-- 	MiniFiles.open(vim.api.nvim_buf_get_name(0))
+			-- end, {})
+			-- vim.api.nvim_create_user_command("MiniFilesSetCurrentWorkingDir", function()
+			-- 	MiniFiles.open(vim.api.nvim_buf_get_name(0), false)
+			-- end, {})
 		end,
+	},
+
+	{
+		"nvim-neo-tree/neo-tree.nvim",
+		branch = "v3.x",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"MunifTanjim/nui.nvim",
+			"nvim-tree/nvim-web-devicons", -- optional, but recommended
+		},
+		lazy = false, -- neo-tree will lazily load itself
+		opts = {
+			hide_root_node = true,
+			window = {
+				width = 35,
+			},
+			filesystem = {
+				window = {
+					mappings = {
+						-- Remap navigations
+						["h"] = "close_node",
+						["l"] = "open", -- or "open" or “toggle_node” depending on your preference
+						["s"] = "open_split",
+						["v"] = "open_vsplit",
+						["<leader>o"] = function(state)
+							local node = state.tree:get_node()
+							if not node then
+								return
+							end
+							local path = node:get_id()
+
+							open_native(path)
+							-- if vim.fn.has("win32") == 1 then
+							-- 	vim.fn.jobstart({ "cmd", "/C", "start", "", path }, { detach = true })
+							-- elseif vim.fn.has("mac") == 1 then
+							-- 	vim.fn.jobstart({ "open", path }, { detach = true })
+							-- else
+							-- 	vim.fn.jobstart({ "xdg-open", path }, { detach = true })
+							-- end
+						end,
+						["Y"] = function(state)
+							local node = state.tree:get_node()
+							if not node or not node.path then
+								return
+							end
+
+							-- Yank the file path to system clipboard
+							vim.fn.setreg("+", node.path)
+							print("Copied to system clipboard: " .. node.path)
+						end,
+					},
+				},
+			},
+			event_handlers = {
+				{
+					event = "file_opened",
+					handler = function(file_path)
+						require("neo-tree.command").execute({ action = "close" })
+					end,
+				},
+			},
+		},
 	},
 
 	{
@@ -813,90 +911,6 @@ require("lazy").setup({
 			--    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
 			--    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
 		end,
-	},
-
-	{
-		"nvim-tree/nvim-tree.lua",
-		version = "*",
-		lazy = false,
-		dependencies = {
-			{ "nvim-tree/nvim-web-devicons" },
-		},
-		opts = {
-			disable_netrw = true,
-			hijack_netrw = true,
-			hijack_cursor = false,
-			diagnostics = {
-				enable = true,
-				show_on_dirs = true,
-				icons = {
-					error = icons.error,
-					warning = icons.warning,
-					info = icons.info,
-					hint = icons.hint,
-				},
-			},
-			git = {
-				enable = true,
-				ignore = true,
-				timeout = 500,
-			},
-			filters = {
-				dotfiles = true,
-				custom = {
-					"**/*_templ.go",
-					"**/*_templ.txt",
-					"**/*.vgen.go",
-					"**/*.meta",
-					-- "**/*.asset",
-				},
-			},
-			renderer = {
-				root_folder_label = false,
-			},
-
-			on_attach = function(bufnr)
-				-- TODO move somewhere else?
-
-				local api = require("nvim-tree.api")
-
-				local function opts(desc)
-					return {
-						desc = "nvim-tree: " .. desc,
-						buffer = bufnr,
-						noremap = true,
-						silent = true,
-						nowait = true,
-					}
-				end
-
-				-- default mappings
-				api.config.mappings.default_on_attach(bufnr)
-
-				-- custom mappings
-				vim.keymap.set("n", "l", api.node.open.edit, opts("Open"))
-				vim.keymap.set("n", "<CR>", api.node.open.edit, opts("Open"))
-				vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Directory"))
-				vim.keymap.set("n", "v", api.node.open.vertical, opts("Open: Vertical Split"))
-
-				vim.keymap.set("n", "?", api.tree.toggle_help, opts("Help"))
-			end,
-		},
-	},
-
-	{
-		"nvim-tree/nvim-web-devicons",
-		enabled = vim.g.have_nerd_font,
-		priority = 100, -- load before telescope and nvim tree
-		lazy = false,
-		opts = {
-			override = {
-				-- rust = {
-				-- 	icon = "",
-				-- 	name = "Rust",
-				-- },
-			},
-		},
 	},
 
 	{
@@ -981,6 +995,127 @@ require("lazy").setup({
 		end,
 	},
 
+	{
+		"akinsho/flutter-tools.nvim",
+		lazy = false,
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"stevearc/dressing.nvim", -- optional for vim.ui.select
+		},
+		opts = {
+			lsp = { settings = { lineLength = 120 } },
+		},
+		config = true,
+		init = function()
+			-- vim.keymap.set("n", "<leader>t", "<cmd>FlutterLogToggle<cr>", { desc = "Toggle flutter logs" })
+		end,
+	},
+
+	{
+		"seblyng/roslyn.nvim",
+		dependencies = { "williamboman/mason.nvim" },
+		opts = {
+			-- your configuration comes here; leave empty for default settings
+		},
+		config = function()
+			print("roslyn")
+			-- vim.lsp.config("roslyn", {
+			-- 	on_attach = function()
+			-- 		vim.keymap.set(
+			-- 			"n",
+			-- 			"<leader>h",
+			-- 			"<cmd>ToggleXamlCs<CR>",
+			-- 			{ desc = "Toggle between XAML and code-behind" }
+			-- 		)
+			-- 	end,
+			-- })
+		end,
+	},
+
+	-- {
+	-- 	"nvim-tree/nvim-tree.lua",
+	-- 	version = "*",
+	-- 	lazy = false,
+	-- 	dependencies = {
+	-- 		{ "nvim-tree/nvim-web-devicons" },
+	-- 	},
+	-- 	opts = {
+	-- 		disable_netrw = true,
+	-- 		hijack_netrw = true,
+	-- 		hijack_cursor = false,
+	-- 		diagnostics = {
+	-- 			enable = true,
+	-- 			show_on_dirs = true,
+	-- 			icons = {
+	-- 				error = icons.error,
+	-- 				warning = icons.warning,
+	-- 				info = icons.info,
+	-- 				hint = icons.hint,
+	-- 			},
+	-- 		},
+	-- 		git = {
+	-- 			enable = true,
+	-- 			ignore = true,
+	-- 			timeout = 500,
+	-- 		},
+	-- 		filters = {
+	-- 			dotfiles = true,
+	-- 			custom = {
+	-- 				"**/*_templ.go",
+	-- 				"**/*_templ.txt",
+	-- 				"**/*.vgen.go",
+	-- 				"**/*.meta",
+	-- 				-- "**/*.asset",
+	-- 			},
+	-- 		},
+	-- 		renderer = {
+	-- 			root_folder_label = false,
+	-- 		},
+	--
+	-- 		on_attach = function(bufnr)
+	-- 			-- TODO move somewhere else?
+	--
+	-- 			local api = require("nvim-tree.api")
+	--
+	-- 			local function opts(desc)
+	-- 				return {
+	-- 					desc = "nvim-tree: " .. desc,
+	-- 					buffer = bufnr,
+	-- 					noremap = true,
+	-- 					silent = true,
+	-- 					nowait = true,
+	-- 				}
+	-- 			end
+	--
+	-- 			-- default mappings
+	-- 			api.config.mappings.default_on_attach(bufnr)
+	--
+	-- 			-- custom mappings
+	-- 			vim.keymap.set("n", "l", api.node.open.edit, opts("Open"))
+	-- 			vim.keymap.set("n", "<CR>", api.node.open.edit, opts("Open"))
+	-- 			vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Directory"))
+	-- 			vim.keymap.set("n", "v", api.node.open.vertical, opts("Open: Vertical Split"))
+	--
+	-- 			vim.keymap.set("n", "?", api.tree.toggle_help, opts("Help"))
+	-- 		end,
+	-- 	},
+	-- },
+
+	-- {
+	-- 	"nvim-tree/nvim-web-devicons",
+	-- 	enabled = vim.g.have_nerd_font,
+	-- 	priority = 100, -- load before telescope and nvim tree
+	-- 	lazy = false,
+	-- 	opts = {
+	-- 		override = {
+	-- 			-- rust = {
+	-- 			-- 	icon = "",
+	-- 			-- 	name = "Rust",
+	-- 			-- },
+	-- 		},
+	-- 	},
+	-- },
+	--
 	-- could be replaced with editconfig
 
 	-- {
@@ -1008,28 +1143,8 @@ require("lazy").setup({
 	-- 		})
 	-- 	end,
 	-- },
-
-	{
-		"akinsho/flutter-tools.nvim",
-		lazy = false,
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"stevearc/dressing.nvim", -- optional for vim.ui.select
-		},
-		opts = {
-			lsp = { settings = { lineLength = 120 } },
-		},
-		config = true,
-		init = function()
-			-- vim.keymap.set("n", "<leader>t", "<cmd>FlutterLogToggle<cr>", { desc = "Toggle flutter logs" })
-		end,
-	},
-
-	{
-		"seblyng/roslyn.nvim",
-		dependencies = { "williamboman/mason.nvim" },
-		opts = {
-			-- your configuration comes here; leave empty for default settings
-		},
-	},
+	-- {
+	-- 	"nvim-telescope/telescope-file-browser.nvim",
+	-- 	dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
+	-- },
 })
