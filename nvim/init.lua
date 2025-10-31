@@ -105,7 +105,7 @@ end
 vim.keymap.set("n", "<leader>o", function()
 	local path = vim.fn.expand("%:p")
 	open_native(path)
-end, {})
+end, { desc = "[O]pen current natively" })
 
 -- Toggle between two suffixes in the current buffer
 local function toggle_suffix(suffix_a, suffix_b)
@@ -894,11 +894,12 @@ require("lazy").setup({
 			vim.keymap.set("n", "<F1>", dap.step_into, { desc = "Debug: Step Into" })
 			vim.keymap.set("n", "<F2>", dap.step_over, { desc = "Debug: Step Over" })
 			vim.keymap.set("n", "<F3>", dap.step_out, { desc = "Debug: Step Out" })
+			vim.keymap.set("n", "<F4>", dap.step_back, { desc = "Debug: Step Back" })
 			vim.keymap.set("n", "<F5>", dap.continue, { desc = "Debug: Start/Continue" })
 			vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint, { desc = "Debug: Toggle Breakpoint" })
 			vim.keymap.set("n", "<leader>B", function()
 				dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
-			end, { desc = "Debug: Set Breakpoint" })
+			end, { desc = "Debug: Set Breakpoint with condition" })
 
 			-- Dap UI setup
 			-- For more information, see |:help nvim-dap-ui|
@@ -990,5 +991,31 @@ require("lazy").setup({
 				})
 			end,
 		},
+	},
+
+	{
+		"nvim-lualine/lualine.nvim",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+		config = function()
+			local empty_theme = {
+				a = { fg = "NONE", bg = "NONE" },
+				b = { fg = "NONE", bg = "NONE" },
+				c = { fg = "NONE", bg = "NONE" },
+			}
+			require("lualine").setup({
+				options = {
+					theme = {
+						normal = empty_theme,
+						insert = empty_theme,
+						visual = empty_theme,
+						replace = empty_theme,
+						command = empty_theme,
+						inactive = empty_theme,
+					},
+					section_separators = "",
+					component_separators = "",
+				},
+			})
+		end,
 	},
 })
