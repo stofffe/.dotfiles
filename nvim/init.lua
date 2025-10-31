@@ -288,6 +288,7 @@ vim.opt.rtp:prepend(lazypath)
 -- Setup plugins
 require("lazy").setup({
 	{ "numToStr/Comment.nvim", opts = {} },
+
 	{ "mg979/vim-visual-multi" },
 
 	--
@@ -881,6 +882,7 @@ require("lazy").setup({
 			-- Custom debuggers
 			"leoluz/nvim-dap-go",
 		},
+		-- cmd = { "DapContinue", "DapToggleBreakpoint", "DapStepOver", "DapStepInto", "DapStepOut" },
 		config = function()
 			local dap = require("dap")
 			local dapui = require("dapui")
@@ -896,6 +898,7 @@ require("lazy").setup({
 			vim.keymap.set("n", "<F3>", dap.step_out, { desc = "Debug: Step Out" })
 			vim.keymap.set("n", "<F4>", dap.step_back, { desc = "Debug: Step Back" })
 			vim.keymap.set("n", "<F5>", dap.continue, { desc = "Debug: Start/Continue" })
+			vim.keymap.set("n", "<F7>", dapui.toggle, { desc = "Debug: See last session result." })
 			vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint, { desc = "Debug: Toggle Breakpoint" })
 			vim.keymap.set("n", "<leader>B", function()
 				dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
@@ -924,8 +927,6 @@ require("lazy").setup({
 			})
 
 			-- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
-			vim.keymap.set("n", "<F7>", dapui.toggle, { desc = "Debug: See last session result." })
-
 			dap.listeners.after.event_initialized["dapui_config"] = dapui.open
 			dap.listeners.before.event_terminated["dapui_config"] = dapui.close
 			dap.listeners.before.event_exited["dapui_config"] = dapui.close
@@ -956,41 +957,48 @@ require("lazy").setup({
 	{
 		"laytan/tailwind-sorter.nvim",
 		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-lua/plenary.nvim" },
-		build = "cd formatter && npm ci && npm run build",
-		config = true,
-		init = function()
-			require("tailwind-sorter").toggle_on_save()
+		-- build = "cd formatter && npm ci && npm run build",
+
+		lazy = true,
+		ft = { "css", "scss", "html", "typescriptreact", "javascriptreact" },
+		config = function()
+			local tailwind_sorter = require("tailwind-sorter")
+			tailwind_sorter.setup()
+			tailwind_sorter.toggle_on_save()
 		end,
 	},
 
 	{
 		"akinsho/flutter-tools.nvim",
-		lazy = false,
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"stevearc/dressing.nvim", -- optional for vim.ui.select
 		},
+		lazy = true,
+		ft = { "dart" },
 		config = function()
 			require("flutter-tools").setup({
 				lsp = { settings = { lineLength = 120 } },
 			})
 			-- vim.keymap.set("n", "<leader>t", "<cmd>FlutterLogToggle<cr>", { desc = "Toggle flutter logs" })
 		end,
+	},
 
-		{
-			"seblyng/roslyn.nvim",
-			dependencies = { "williamboman/mason.nvim" },
-			config = function()
-				vim.lsp.config("roslyn", {
-					cmd = {
-						"C:/Users/chan/AppData/Local/nvim-data/mason/bin/roslyn.cmd",
-						"--logLevel=Information",
-						"--extensionLogDirectory=C:/Users/chan/AppData/Local/nvim-data",
-						"--stdio",
-					},
-				})
-			end,
-		},
+	{
+		"seblyng/roslyn.nvim",
+		dependencies = { "williamboman/mason.nvim" },
+		lazy = true,
+		ft = { "cs" },
+		config = function()
+			vim.lsp.config("roslyn", {
+				cmd = {
+					"C:/Users/chan/AppData/Local/nvim-data/mason/bin/roslyn.cmd",
+					"--logLevel=Information",
+					"--extensionLogDirectory=C:/Users/chan/AppData/Local/nvim-data",
+					"--stdio",
+				},
+			})
+		end,
 	},
 
 	{
