@@ -34,12 +34,9 @@ vim.opt.hlsearch = false
 vim.opt.swapfile = false
 vim.opt.backup = false
 
-vim.opt.shell = "pwsh.exe"
-
 --
 -- Keymaps
 --
-
 vim.keymap.set("n", "<leader>s", "<Nop>", {})
 vim.keymap.set("n", "<leader>w", ":w<CR>", { desc = "Save file" })
 vim.keymap.set("n", "<leader>q", ":q<CR>", { desc = "Quit file" })
@@ -70,32 +67,53 @@ vim.keymap.set("n", "<leader>co", "<cmd>copen<cr>", {})
 vim.keymap.set("n", "<leader>cc", "<cmd>cexpr []<cr><cmd>cclose<cr>", {})
 vim.keymap.set("n", "<leader>cd", ":cdo", {})
 
-vim.api.nvim_create_user_command("Build", function()
-	vim.cmd("set shell=cmd")
-	-- Run make silently and capture all output
-	local output = vim.fn.systemlist(vim.o.makeprg)
-	vim.cmd("set shell=pwsh")
+local on_windows = vim.fn.has("win32") == 1
+local on_mac = vim.fn.has("mac") == 1
 
-	-- Remove carriage returns (\r) from each line
-	for i, line in ipairs(output) do
-		output[i] = line:gsub("\r", "")
-	end
+-- Windows specific
+if on_windows then
+	vim.opt.shell = "pwsh"
 
-	-- Send output to quickfix
-	vim.fn.setqflist({}, " ", { title = "Build", lines = output })
+	vim.keymap.set("n", "<M-j>", "<cmd>move +1<CR>", { desc = "Move line up" })
+	vim.keymap.set("n", "<M-k>", "<cmd>move -2<CR>", { desc = "Move line down" })
+	vim.keymap.set("v", "<M-j>", ":m '>+1<CR>gv=gv", { desc = "Move selection down", silent = true })
+	vim.keymap.set("v", "<M-k>", ":m '<-2<CR>gv=gv", { desc = "Move selection up", silent = true })
 
-	-- Open quickfix at half screen height
-	local win_height = math.floor(vim.o.lines / 2)
-	vim.cmd(win_height .. "copen")
+	vim.api.nvim_create_user_command("Build", function()
+		vim.cmd("set shell=cmd")
+		-- Run make silently and capture all output
+		local output = vim.fn.systemlist(vim.o.makeprg)
+		vim.cmd("set shell=pwsh")
 
-	-- Enter the quickfix window
-	vim.cmd("wincmd j")
-end, {})
+		-- Remove carriage returns (\r) from each line
+		for i, line in ipairs(output) do
+			output[i] = line:gsub("\r", "")
+		end
+
+		-- Send output to quickfix
+		vim.fn.setqflist({}, " ", { title = "Build", lines = output })
+
+		-- Open quickfix at half screen height
+		local win_height = math.floor(vim.o.lines / 2)
+		vim.cmd(win_height .. "copen")
+
+		-- Enter the quickfix window
+		vim.cmd("wincmd j")
+	end, {})
+end
+
+-- Mac specific
+if on_mac then
+	vim.keymap.set("n", "√", "<cmd>move +1<CR>", { desc = "Move line up" })
+	vim.keymap.set("n", "ª", "<cmd>move -2<CR>", { desc = "Move line down" })
+	vim.cmd("vnoremap √ :m '>+1<CR>gv=gv")
+	vim.cmd("vnoremap ª :m '<-2<CR>gv=gv")
+end
 
 local open_native = function(path)
-	if vim.fn.has("win32") == 1 then
+	if on_windows then
 		vim.fn.jobstart({ "cmd", "/C", "start", "", path }, { detach = true })
-	elseif vim.fn.has("mac") == 1 then
+	elseif on_mac then
 		vim.fn.jobstart({ "open", path }, { detach = true })
 	else
 		vim.fn.jobstart({ "xdg-open", path }, { detach = true })
@@ -201,18 +219,6 @@ end, {})
 vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], {})
 vim.keymap.set("t", "jk", [[<C-\><C-n>]], {})
 
--- Mac specific
-vim.keymap.set("n", "√", "<cmd>move +1<CR>", { desc = "Move line up" })
-vim.keymap.set("n", "ª", "<cmd>move -2<CR>", { desc = "Move line down" })
-vim.cmd("vnoremap √ :m '>+1<CR>gv=gv")
-vim.cmd("vnoremap ª :m '<-2<CR>gv=gv")
-
--- Windows specific
-vim.keymap.set("n", "<M-j>", "<cmd>move +1<CR>", { desc = "Move line up" })
-vim.keymap.set("n", "<M-k>", "<cmd>move -2<CR>", { desc = "Move line down" })
-vim.keymap.set("v", "<M-j>", ":m '>+1<CR>gv=gv", { desc = "Move selection down", silent = true })
-vim.keymap.set("v", "<M-k>", ":m '<-2<CR>gv=gv", { desc = "Move selection up", silent = true })
-
 --
 -- Commands
 --
@@ -254,7 +260,8 @@ vim.diagnostic.config({
 		focusable = false,
 		style = "minimal",
 		border = "rounded",
-		source = "always",
+		-- source = "always",
+		source = true,
 		header = "",
 		prefix = "",
 	},
@@ -287,6 +294,7 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Setup plugins
 require("lazy").setup({
+
 	{ "numToStr/Comment.nvim", opts = {} },
 
 	{ "mg979/vim-visual-multi" },
@@ -419,10 +427,25 @@ require("lazy").setup({
 			vim.keymap.set("n", "<leader>ss", builtin.builtin, { desc = "[S]earch [S]elect Telescope" })
 			vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "[S]earch current [W]ord" })
 			vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
-			vim.keymap.set("n", "<leader>d", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
 			vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "[S]earch [R]esume" })
 			vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
 			vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
+
+			-- diagnostics
+			local severity = vim.diagnostic.severity
+			vim.keymap.set("n", "<leader>d", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
+			vim.keymap.set("n", "<leader>de", function()
+				builtin.diagnostics({ severity = severity.ERROR })
+			end, { desc = "[D]iagnostics: [E]rrors" })
+			vim.keymap.set("n", "<leader>dw", function()
+				builtin.diagnostics({ severity = severity.WARN })
+			end, { desc = "[D]iagnostics: [W]arnings" })
+			vim.keymap.set("n", "<leader>di", function()
+				builtin.diagnostics({ severity = severity.INFO })
+			end, { desc = "[D]iagnostics: [I]nfo" })
+			vim.keymap.set("n", "<leader>dh", function()
+				builtin.diagnostics({ severity = severity.HINT })
+			end, { desc = "[D]iagnostics: [H]ints" })
 
 			-- Fuzzy search current buffer
 			vim.keymap.set(
@@ -447,11 +470,21 @@ require("lazy").setup({
 			{ "williamboman/mason-lspconfig.nvim" },
 			{ "WhoIsSethDaniel/mason-tool-installer.nvim" },
 			{ "j-hui/fidget.nvim", opts = {} }, -- status updates
-			{ "folke/neodev.nvim", opts = {} }, -- lua lsp config
+			{
+				"folke/lazydev.nvim",
+				ft = "lua", -- only load on lua files
+				opts = {
+					library = {
+						-- See the configuration section for more details
+						-- Load luvit types when the `vim.uv` word is found
+						{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
+					},
+				},
+			},
 		},
 		config = function()
 			-- requires to have glasgow downloaded
-			require("lspconfig").glasgow.setup({})
+			-- vim.lsp.config["glasgow"].setup({})
 			-- require("lspconfig").roslyn.setup({})
 
 			vim.api.nvim_create_autocmd("LspAttach", {
@@ -537,8 +570,13 @@ require("lazy").setup({
 							completion = {
 								callSnippet = "Replace",
 							},
+							workspace = {
+								library = vim.api.nvim_get_runtime_file("", true), -- make Neovim runtime available
+								checkThirdParty = false,
+							},
 							diagnostics = {
 								disable = { "missing-fields" },
+								globals = { "vim" },
 							},
 						},
 					},
@@ -555,6 +593,7 @@ require("lazy").setup({
 			require("mason-tool-installer").setup({
 				ensure_installed = vim.tbl_keys(servers or {}),
 			})
+			print("MASON")
 
 			require("mason-lspconfig").setup({
 				handlers = {
@@ -564,7 +603,8 @@ require("lazy").setup({
 						-- by the server configuration above. Useful when disabling
 						-- certain features of an LSP (for example, turning off formatting for tsserver)
 						server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-						require("lspconfig")[server_name].setup(server)
+						vim.lsp.config[server].setup(server)
+						-- require("lspconfig")[server_name].setup(server)
 					end,
 				},
 			})
@@ -958,12 +998,11 @@ require("lazy").setup({
 		"laytan/tailwind-sorter.nvim",
 		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-lua/plenary.nvim" },
 		-- build = "cd formatter && npm ci && npm run build",
-
 		lazy = true,
 		ft = { "css", "scss", "html", "typescriptreact", "javascriptreact" },
 		config = function()
 			local tailwind_sorter = require("tailwind-sorter")
-			tailwind_sorter.setup()
+			tailwind_sorter.setup({})
 			tailwind_sorter.toggle_on_save()
 		end,
 	},
@@ -1011,6 +1050,11 @@ require("lazy").setup({
 				c = { fg = "NONE", bg = "NONE" },
 			}
 			require("lualine").setup({
+				sections = {
+					lualine_c = {
+						{ "filename", path = 1 },
+					},
+				},
 				options = {
 					theme = {
 						normal = empty_theme,
@@ -1024,6 +1068,14 @@ require("lazy").setup({
 					component_separators = "",
 				},
 			})
+
+			vim.api.nvim_create_user_command("LualineToggle", function()
+				if vim.o.laststatus == 0 then
+					vim.o.laststatus = 3 -- show lualine
+				else
+					vim.o.laststatus = 0 -- hide lualine
+				end
+			end, { desc = "Toggle Lualine" })
 		end,
 	},
 })
