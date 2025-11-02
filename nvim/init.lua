@@ -530,59 +530,12 @@ require("lazy").setup({
 				end,
 			})
 
-			local capabilities = vim.lsp.protocol.make_client_capabilities()
-			capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
-
 			--  Add any additional override configuration in the following tables. Available keys are:
 			--  - cmd (table): Override the default command used to start the server
 			--  - filetypes (table): Override the default list of associated filetypes for the server
 			--  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
 			--  - settings (table): Override the default settings passed when initializing the server.
 			--        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
-			local servers = {
-				clangd = {
-					on_attach = function(_, bufnr)
-						local opts = { silent = true, buffer = bufnr }
-						vim.keymap.set("n", "<leader>h", "<cmd>ClangdSwitchSourceHeader<CR>", opts)
-					end,
-				},
-				rust_analyzer = {
-					settings = {
-						-- rust-analyzer language server configuration
-						["rust-analyzer"] = {
-							checkOnSave = {
-								command = "clippy",
-								allFeatures = true,
-								overrideCommand = {
-									"cargo",
-									"clippy",
-									"--workspace",
-									"--message-format=json",
-									"--all-targets",
-								},
-							},
-						},
-					},
-				},
-				lua_ls = {
-					settings = {
-						Lua = {
-							completion = {
-								callSnippet = "Replace",
-							},
-							workspace = {
-								library = vim.api.nvim_get_runtime_file("", true), -- make Neovim runtime available
-								checkThirdParty = false,
-							},
-							diagnostics = {
-								disable = { "missing-fields" },
-								globals = { "vim" },
-							},
-						},
-					},
-				},
-				stylua = {},
-			}
 
 			require("mason").setup({
 				registries = {
@@ -595,18 +548,92 @@ require("lazy").setup({
 			})
 
 			require("mason-lspconfig").setup({
-				handlers = {
-					function(server_name)
-						local server = servers[server_name] or {}
-						-- This handles overriding only values explicitly passed
-						-- by the server configuration above. Useful when disabling
-						-- certain features of an LSP (for example, turning off formatting for tsserver)
-						server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-						vim.lsp.config[server].setup(server)
-						-- require("lspconfig")[server_name].setup(server)
-					end,
+				automatic_enable = {
+					exclude = { "rust_analyzer" },
 				},
 			})
+
+			local servers = {
+				clangd = {
+					on_attach = function(_, bufnr)
+						local opts = { silent = true, buffer = bufnr }
+						vim.keymap.set("n", "<leader>h", "<cmd>ClangdSwitchSourceHeader<CR>", opts)
+					end,
+				},
+				lua_ls = {
+					settings = {
+						Lua = {
+							completion = {
+								callSnippet = "Replace",
+							},
+							workspace = {
+								library = vim.api.nvim_get_runtime_file("", true), -- make Neovim runtime available
+								checkThirdParty = false,
+							},
+							-- diagnostics = {
+							-- 	disable = { "missing-fields" },
+							-- 	globals = { "vim" },
+							-- },
+						},
+					},
+				},
+				stylua = {},
+				glasgow = {
+					filetypes = { "wgsl" },
+				},
+			}
+
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
+			capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
+			for server_name, config in pairs(servers) do
+				-- This handles overriding only values explicitly passed
+				-- by the server configuration above. Useful when disabling
+				-- certain features of an LSP (for example, turning off formatting for tsserver)
+				config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+				vim.lsp.config(server_name, config)
+			end
+
+			local res = vim.lsp.config("glasgow", {})
+			print(res)
+		end,
+	},
+
+	{
+		"nvim-lualine/lualine.nvim",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+		config = function()
+			local empty_theme = {
+				a = { fg = "NONE", bg = "NONE" },
+				b = { fg = "NONE", bg = "NONE" },
+				c = { fg = "NONE", bg = "NONE" },
+			}
+			require("lualine").setup({
+				sections = {
+					lualine_c = {
+						{ "filename", path = 1 },
+					},
+				},
+				options = {
+					theme = {
+						normal = empty_theme,
+						insert = empty_theme,
+						visual = empty_theme,
+						replace = empty_theme,
+						command = empty_theme,
+						inactive = empty_theme,
+					},
+					section_separators = "",
+					component_separators = "",
+				},
+			})
+
+			vim.api.nvim_create_user_command("LualineToggle", function()
+				if vim.o.laststatus == 0 then
+					vim.o.laststatus = 3 -- show lualine
+				else
+					vim.o.laststatus = 0 -- hide lualine
+				end
+			end, { desc = "Toggle Lualine" })
 		end,
 	},
 
@@ -980,6 +1007,10 @@ require("lazy").setup({
 		end,
 	},
 
+	--
+	-- Language specific plugins
+	--
+
 	{
 		"laytan/tailwind-sorter.nvim",
 		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-lua/plenary.nvim" },
@@ -1027,41 +1058,48 @@ require("lazy").setup({
 	},
 
 	{
-		"nvim-lualine/lualine.nvim",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
-		config = function()
-			local empty_theme = {
-				a = { fg = "NONE", bg = "NONE" },
-				b = { fg = "NONE", bg = "NONE" },
-				c = { fg = "NONE", bg = "NONE" },
-			}
-			require("lualine").setup({
-				sections = {
-					lualine_c = {
-						{ "filename", path = 1 },
-					},
-				},
-				options = {
-					theme = {
-						normal = empty_theme,
-						insert = empty_theme,
-						visual = empty_theme,
-						replace = empty_theme,
-						command = empty_theme,
-						inactive = empty_theme,
-					},
-					section_separators = "",
-					component_separators = "",
-				},
-			})
+		"mrcjkb/rustaceanvim",
+		version = "^6", -- Recommended
+		lazy = false, -- This plugin is already lazy
+		init = function()
+			vim.g.rustaceanvim = {
+				-- Plugin configuration
+				tools = {},
+				-- LSP configuration
+				server = {
+					on_attach = function(client, bufnr)
+						print("ATTACH")
+						vim.keymap.set("n", "gl", function()
+							vim.cmd.RustLsp("renderDiagnostic")
+						end, { desc = "Open float" })
 
-			vim.api.nvim_create_user_command("LualineToggle", function()
-				if vim.o.laststatus == 0 then
-					vim.o.laststatus = 3 -- show lualine
-				else
-					vim.o.laststatus = 0 -- hide lualine
-				end
-			end, { desc = "Toggle Lualine" })
+						-- you can also put keymaps in here
+					end,
+					default_settings = {
+						["rust-analyzer"] = {
+							checkOnSave = true,
+							-- checkOnSave = {
+							-- 	command = "clippy",
+							-- 	allFeatures = true,
+							-- 	overrideCommand = {
+							-- 		"cargo",
+							-- 		"clippy",
+							-- 		"--workspace",
+							-- 		"--message-format=json",
+							-- 		"--all-targets",
+							-- 	},
+							-- },
+						},
+					},
+				},
+				dap = {},
+			}
 		end,
+	},
+
+	{
+		"p00f/clangd_extensions.nvim",
+		ft = { "c", "cpp" },
+		lazy = true,
 	},
 })
