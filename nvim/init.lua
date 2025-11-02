@@ -483,9 +483,7 @@ require("lazy").setup({
 			},
 		},
 		config = function()
-			-- requires to have glasgow downloaded
-			-- vim.lsp.config["glasgow"].setup({})
-			-- require("lspconfig").roslyn.setup({})
+			-- require("lspconfig").glasgow.setup({})
 
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
@@ -512,7 +510,7 @@ require("lazy").setup({
 					map("<leader>a", vim.lsp.buf.code_action, "Code [A]ction")
 					map("K", vim.lsp.buf.hover, "Hover Documentation")
 					map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration") -- ex: C header
-					map("gl", vim.diagnostic.open_float, "Open float")
+					map("dl", vim.diagnostic.open_float, "[D]iagnostic [L]ine")
 
 					-- Highlight all occurances of word under cursor
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -536,24 +534,8 @@ require("lazy").setup({
 			--  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
 			--  - settings (table): Override the default settings passed when initializing the server.
 			--        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
-
-			require("mason").setup({
-				registries = {
-					"github:Crashdummyy/mason-registry", -- for roslyn
-					"github:mason-org/mason-registry",
-				},
-			})
-			require("mason-tool-installer").setup({
-				ensure_installed = vim.tbl_keys(servers or {}),
-			})
-
-			require("mason-lspconfig").setup({
-				automatic_enable = {
-					exclude = { "rust_analyzer" },
-				},
-			})
-
 			local servers = {
+				rust_analyzer = {},
 				clangd = {
 					on_attach = function(_, bufnr)
 						local opts = { silent = true, buffer = bufnr }
@@ -578,10 +560,28 @@ require("lazy").setup({
 					},
 				},
 				stylua = {},
-				glasgow = {
-					filetypes = { "wgsl" },
-				},
 			}
+
+			require("mason").setup({
+				registries = {
+					"github:Crashdummyy/mason-registry", -- for roslyn
+					"github:mason-org/mason-registry",
+				},
+			})
+			require("mason-tool-installer").setup({
+				ensure_installed = vim.tbl_keys(servers or {}),
+			})
+			require("mason-lspconfig").setup({
+				automatic_enable = true,
+
+				-- TODO: uncomment if using rustaceanvim
+				-- automatic_enable = {
+				-- 	-- exclude = { "rust_analyzer" },
+				-- },
+			})
+
+			-- Manually enable non mason lsp:s
+			vim.lsp.enable("glasgow")
 
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 			capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
@@ -593,8 +593,14 @@ require("lazy").setup({
 				vim.lsp.config(server_name, config)
 			end
 
-			local res = vim.lsp.config("glasgow", {})
-			print(res)
+			-- print("INIT GLASGOW")
+			-- vim.lsp.config("glasgow", {
+			-- 	cmd = { "glasgow", "--stdio" },
+			-- 	filetypes = { "wgsl", "txt" },
+			-- 	root_markers = {
+			-- 		".git",
+			-- 	},
+			-- })
 		end,
 	},
 
@@ -952,13 +958,21 @@ require("lazy").setup({
 		config = function()
 			local dap = require("dap")
 			local dapui = require("dapui")
+			local dap_mason = require("mason-nvim-dap")
 
-			require("mason-nvim-dap").setup({
+			dap_mason.setup({
 				automatic_setup = true, -- Best effort
 				handlers = {},
-				ensure_installed = {},
+				-- ensure_installed = { "codelldb" },
 			})
+			dapui.setup({})
 
+			-- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
+			dap.listeners.after.event_initialized["dapui_config"] = dapui.open
+			dap.listeners.before.event_terminated["dapui_config"] = dapui.close
+			dap.listeners.before.event_exited["dapui_config"] = dapui.close
+
+			-- keymaps
 			vim.keymap.set("n", "<F1>", dap.step_into, { desc = "Debug: Step Into" })
 			vim.keymap.set("n", "<F2>", dap.step_over, { desc = "Debug: Step Over" })
 			vim.keymap.set("n", "<F3>", dap.step_out, { desc = "Debug: Step Out" })
@@ -972,19 +986,12 @@ require("lazy").setup({
 			vim.keymap.set("n", "<leader>B", function()
 				dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
 			end, { desc = "Debug: Set Breakpoint with condition" })
-
 			-- vim.fn.sign_define("DapBreakpoint", { text = "●", texthl = "DapBreakpoint", linehl = "", numhl = "" })
 			vim.fn.sign_define("DapBreakpoint", { text = "🔴", texthl = "DapBreakpoint", linehl = "", numhl = "" })
 
-			-- Dap UI setup
-			dapui.setup({})
-
-			-- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
-			dap.listeners.after.event_initialized["dapui_config"] = dapui.open
-			dap.listeners.before.event_terminated["dapui_config"] = dapui.close
-			dap.listeners.before.event_exited["dapui_config"] = dapui.close
-
-			-- Install golang specific config
+			--
+			-- Specific debuggers
+			--
 			require("dap-go").setup()
 
 			dap.adapters.executable = {
@@ -1057,45 +1064,48 @@ require("lazy").setup({
 		end,
 	},
 
-	{
-		"mrcjkb/rustaceanvim",
-		version = "^6", -- Recommended
-		lazy = false, -- This plugin is already lazy
-		init = function()
-			vim.g.rustaceanvim = {
-				-- Plugin configuration
-				tools = {},
-				-- LSP configuration
-				server = {
-					on_attach = function(client, bufnr)
-						print("ATTACH")
-						vim.keymap.set("n", "gl", function()
-							vim.cmd.RustLsp("renderDiagnostic")
-						end, { desc = "Open float" })
-
-						-- you can also put keymaps in here
-					end,
-					default_settings = {
-						["rust-analyzer"] = {
-							checkOnSave = true,
-							-- checkOnSave = {
-							-- 	command = "clippy",
-							-- 	allFeatures = true,
-							-- 	overrideCommand = {
-							-- 		"cargo",
-							-- 		"clippy",
-							-- 		"--workspace",
-							-- 		"--message-format=json",
-							-- 		"--all-targets",
-							-- 	},
-							-- },
-						},
-					},
-				},
-				dap = {},
-			}
-		end,
-	},
+	-- {
+	-- 	"mrcjkb/rustaceanvim",
+	-- 	version = "^6", -- Recommended
+	-- 	lazy = false, -- This plugin is already lazy
+	-- 	init = function()
+	-- 		vim.g.rustaceanvim = {
+	-- 			-- Plugin configuration
+	-- 			tools = {},
+	-- 			-- LSP configuration
+	-- 			server = {
+	-- 				on_attach = function(client, bufnr)
+	-- 					vim.keymap.set("n", "dl", function()
+	-- 						vim.cmd.RustLsp("renderDiagnostic")
+	-- 					end, { buffer = bufnr, desc = "[Override] [D]iagnostic [L]ine" })
+	-- 					vim.keymap.set("n", "dr", function()
+	-- 						vim.cmd.RustLsp("relatedDiagnostic")
+	-- 					end, { buffer = bufnr, desc = "[Override] [D]iagnostic [R]elated" })
+	-- 					vim.keymap.set("n", "<F5>", function()
+	-- 						vim.cmd.RustLsp("debuggables")
+	-- 					end, { buffer = bufnr, desc = "[Override] Dap Continue" })
+	-- 				end,
+	-- 				default_settings = {
+	-- 					["rust-analyzer"] = {
+	-- 						checkOnSave = true,
+	-- 						-- checkOnSave = {
+	-- 						-- 	command = "clippy",
+	-- 						-- 	allFeatures = true,
+	-- 						-- 	overrideCommand = {
+	-- 						-- 		"cargo",
+	-- 						-- 		"clippy",
+	-- 						-- 		"--workspace",
+	-- 						-- 		"--message-format=json",
+	-- 						-- 		"--all-targets",
+	-- 						-- 	},
+	-- 						-- },
+	-- 					},
+	-- 				},
+	-- 			},
+	-- 			dap = {},
+	-- 		}
+	-- 	end,
+	-- },
 
 	{
 		"p00f/clangd_extensions.nvim",
