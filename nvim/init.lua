@@ -423,7 +423,7 @@ require("lazy").setup({
 			local builtin = require("telescope.builtin")
 			vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
 			vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
-			vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "[S]earch [F]iles" })
+			vim.keymap.set("n", "<leader>f", builtin.find_files, { desc = "[S]earch [F]iles" })
 			vim.keymap.set("n", "<leader>ss", builtin.builtin, { desc = "[S]earch [S]elect Telescope" })
 			vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "[S]earch current [W]ord" })
 			vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
@@ -593,7 +593,6 @@ require("lazy").setup({
 			require("mason-tool-installer").setup({
 				ensure_installed = vim.tbl_keys(servers or {}),
 			})
-			print("MASON")
 
 			require("mason-lspconfig").setup({
 				handlers = {
@@ -939,32 +938,19 @@ require("lazy").setup({
 			vim.keymap.set("n", "<F4>", dap.step_back, { desc = "Debug: Step Back" })
 			vim.keymap.set("n", "<F5>", dap.continue, { desc = "Debug: Start/Continue" })
 			vim.keymap.set("n", "<F7>", dapui.toggle, { desc = "Debug: See last session result." })
+			vim.keymap.set("n", "<leader>dk", function()
+				dapui.eval(nil, { enter = true })
+			end, { desc = "Evaluate work under cursor" })
 			vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint, { desc = "Debug: Toggle Breakpoint" })
 			vim.keymap.set("n", "<leader>B", function()
 				dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
 			end, { desc = "Debug: Set Breakpoint with condition" })
 
+			-- vim.fn.sign_define("DapBreakpoint", { text = "●", texthl = "DapBreakpoint", linehl = "", numhl = "" })
+			vim.fn.sign_define("DapBreakpoint", { text = "🔴", texthl = "DapBreakpoint", linehl = "", numhl = "" })
+
 			-- Dap UI setup
-			-- For more information, see |:help nvim-dap-ui|
-			dapui.setup({
-				-- Set icons to characters that are more likely to work in every terminal.
-				--    Feel free to remove or use ones that you like more! :)
-				--    Don't feel like these are good choices.
-				icons = { expanded = "▾", collapsed = "▸", current_frame = "*" },
-				controls = {
-					icons = {
-						pause = "⏸",
-						play = "▶",
-						step_into = "⤵️",
-						step_over = "⏭",
-						step_out = "⤴️",
-						step_back = "⏮",
-						run_last = "🔄",
-						terminate = "⏹",
-						disconnect = "⏏",
-					},
-				},
-			})
+			dapui.setup({})
 
 			-- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
 			dap.listeners.after.event_initialized["dapui_config"] = dapui.open
