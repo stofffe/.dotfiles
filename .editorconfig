@@ -1,0 +1,11 @@
+[*.cs]
+# new()
+dotnet_diagnostic.IDE0090.severity = none
+# remove this
+dotnet_diagnostic.IDE0003.severity = none
+# unused
+dotnet_diagnostic.IDE0001.severity = none
+# can be inlined
+dotnet_diagnostic.IDE0018.severity = none
+# primary constructor
+dotnet_diagnostic.IDE0290.severity = none 
