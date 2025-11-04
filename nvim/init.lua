@@ -121,9 +121,29 @@ local open_native = function(path)
 	end
 end
 
+local open_visual_studio = function(path)
+	local vs_path = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\Common7\\IDE\\devenv.exe"
+	local command = {
+		vs_path,
+		"/Edit",
+		path,
+	}
+	vim.fn.jobstart(command, { detach = true })
+end
+
+local open_file = function(path)
+	local ext = path:match("^.+(%..+)$") -- get the file extension, e.g., ".cs" or ".xaml"
+
+	if ext == ".xaml" then
+		open_visual_studio(path)
+	else
+		open_native(path)
+	end
+end
+
 vim.keymap.set("n", "<leader>o", function()
-	local path = vim.fn.expand("%:p")
-	open_native(path)
+	local path = vim.fn.expand("%:p") -- full path of current file
+	open_file(path)
 end, { desc = "[O]pen current natively" })
 
 -- Toggle between two suffixes in the current buffer
@@ -468,8 +488,6 @@ require("lazy").setup({
 			},
 		},
 		config = function()
-			-- require("lspconfig").glasgow.setup({})
-
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
 				callback = function(event)
@@ -577,15 +595,6 @@ require("lazy").setup({
 				config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
 				vim.lsp.config(server_name, config)
 			end
-
-			-- print("INIT GLASGOW")
-			-- vim.lsp.config("glasgow", {
-			-- 	cmd = { "glasgow", "--stdio" },
-			-- 	filetypes = { "wgsl", "txt" },
-			-- 	root_markers = {
-			-- 		".git",
-			-- 	},
-			-- })
 		end,
 	},
 
@@ -875,7 +884,7 @@ require("lazy").setup({
 							end
 							local path = node:get_id()
 
-							open_native(path)
+							open_file(path)
 						end,
 						["Y"] = function(state)
 							local node = state.tree:get_node()
@@ -1049,6 +1058,13 @@ require("lazy").setup({
 					"--extensionLogDirectory=C:/Users/chan/AppData/Local/nvim-data",
 					"--stdio",
 				},
+			})
+			vim.api.nvim_create_autocmd("BufNewFile", {
+				group = vim.api.nvim_create_augroup("RoslynRestartOnCSharp", { clear = true }),
+				pattern = "*.cs", -- trigger only for C# files
+				callback = function()
+					vim.cmd("Roslyn restart")
+				end,
 			})
 		end,
 	},
