@@ -33,6 +33,7 @@ vim.opt.incsearch = true
 vim.opt.hlsearch = false
 vim.opt.swapfile = false
 vim.opt.backup = false
+vim.opt.winborder = "rounded"
 
 --
 -- Keymaps
@@ -164,7 +165,9 @@ end
 setup_toggle_file_keymap(".xaml", ".xaml.cs", "<leader>h")
 setup_toggle_file_keymap(".templ", "_templ.go", "<leader>h")
 
--- terminal
+--
+-- Terminal
+--
 
 local active_term = -1
 vim.api.nvim_create_autocmd("TermOpen", {
@@ -177,12 +180,9 @@ vim.api.nvim_create_autocmd("TermOpen", {
 	end,
 })
 
-vim.keymap.set("n", "<leader>t", function()
-	vim.cmd.buffer(active_term)
-end, {})
-
+vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], {})
+vim.keymap.set("t", "jk", [[<C-\><C-n>]], {})
 vim.keymap.set("t", "<leader>t", vim.cmd.q, {})
-
 vim.keymap.set("n", "<leader>t", function()
 	local terminal_open = false
 	local terminal_win = -1
@@ -216,14 +216,11 @@ vim.keymap.set("n", "<leader>t", function()
 	end
 end, {})
 
-vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], {})
-vim.keymap.set("t", "jk", [[<C-\><C-n>]], {})
-
 --
 -- Commands
 --
 
--- Highlight when yanking (copying) text
+-- -- Highlight when yanking (copying) text
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = vim.api.nvim_create_augroup("highlight-yank", { clear = true }),
 	callback = function()
@@ -275,15 +272,6 @@ vim.diagnostic.config({
 	},
 })
 
--- Global floating window border for all LSP floats
-vim.lsp.util.open_floating_preview = (function(orig)
-	return function(contents, syntax, opts, ...)
-		opts = opts or {}
-		opts.border = opts.border or "rounded"
-		return orig(contents, syntax, opts, ...)
-	end
-end)(vim.lsp.util.open_floating_preview)
-
 -- Install Lazy plugin manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -294,8 +282,7 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Setup plugins
 require("lazy").setup({
-
-	{ "numToStr/Comment.nvim", opts = {} },
+	-- { "numToStr/Comment.nvim", opts = {} },
 
 	{ "mg979/vim-visual-multi" },
 
@@ -323,8 +310,6 @@ require("lazy").setup({
 			local Worktree = require("git-worktree")
 
 			-- store the current worktree root before switching
-			local old_worktree = vim.fn.getcwd()
-
 			Worktree.on_tree_change(function(op, metadata)
 				if op == Worktree.Operations.Switch then
 					if not Worktree.update_current_buffer(metadata.prev_path) then
@@ -356,10 +341,10 @@ require("lazy").setup({
 			{ "nvim-lua/plenary.nvim" },
 			{ "nvim-telescope/telescope-ui-select.nvim" },
 			{ "nvim-tree/nvim-web-devicons" },
-			{
-				"nvim-telescope/telescope-fzf-native.nvim",
-				build = "cmake -S. -Bbuild -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release",
-			},
+			-- {
+			-- 	"nvim-telescope/telescope-fzf-native.nvim",
+			-- 	build = "cmake -S. -Bbuild -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release",
+			-- },
 			-- {
 			-- 	"nvim-telescope/telescope-fzf-native.nvim",
 			-- 	build = "make", -- Update plugin when neccesary
@@ -510,7 +495,7 @@ require("lazy").setup({
 					map("<leader>a", vim.lsp.buf.code_action, "Code [A]ction")
 					map("K", vim.lsp.buf.hover, "Hover Documentation")
 					map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration") -- ex: C header
-					map("dl", vim.diagnostic.open_float, "[D]iagnostic [L]ine")
+					map("<leader>dl", vim.diagnostic.open_float, "[D]iagnostic [L]ine")
 
 					-- Highlight all occurances of word under cursor
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -919,6 +904,7 @@ require("lazy").setup({
 	{
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
+		-- commit = "63260da18bf273c76b8e2ea0db84eb901cab49ce",
 		config = function(_, opts)
 			---@diagnostic disable-next-line: missing-fields
 			require("nvim-treesitter.configs").setup({
@@ -1018,18 +1004,21 @@ require("lazy").setup({
 	-- Language specific plugins
 	--
 
-	{
-		"laytan/tailwind-sorter.nvim",
-		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-lua/plenary.nvim" },
-		-- build = "cd formatter && npm ci && npm run build",
-		lazy = true,
-		ft = { "css", "scss", "html", "typescriptreact", "javascriptreact" },
-		config = function()
-			local tailwind_sorter = require("tailwind-sorter")
-			tailwind_sorter.setup({})
-			tailwind_sorter.toggle_on_save()
-		end,
-	},
+	-- {
+	-- 	"laytan/tailwind-sorter.nvim",
+	-- 	dependencies = {
+	--      "nvim-treesitter/nvim-treesitter",
+	-- 		"nvim-lua/plenary.nvim",
+	-- 	},
+	-- 	-- build = "cd formatter && npm ci && npm run build",
+	-- 	lazy = true,
+	-- 	ft = { "css", "scss", "html", "typescriptreact", "javascriptreact" },
+	-- 	config = function()
+	-- 		local tailwind_sorter = require("tailwind-sorter")
+	-- 		tailwind_sorter.setup({})
+	-- 		tailwind_sorter.toggle_on_save()
+	-- 	end,
+	-- },
 
 	{
 		"akinsho/flutter-tools.nvim",
