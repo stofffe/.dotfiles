@@ -35,6 +35,12 @@ vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.winborder = "rounded"
 
+vim.opt.foldmethod = "expr"
+-- vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldexpr = "v:lua.vim.lsp.foldexpr()"
+vim.opt.foldenable = false
+vim.opt.foldlevel = 20
+
 --
 -- Keymaps
 --
@@ -47,7 +53,7 @@ vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "Toggle fil
 vim.keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 vim.keymap.set("i", "<C-h>", "<Left>", { desc = "Move left in insert mode" })
 vim.keymap.set("i", "<C-l>", "<Right>", { desc = "Move right in insert mode" })
-vim.keymap.set({ "n", "i" }, "<C-q>", "@q", { desc = "Execute default macro @q" })
+-- vim.keymap.set({ "n", "i" }, "<C-q>", "@q", { desc = "Execute default macro @q" })
 --vim.keymap.set("x", "p", [['_dP]], { desc = "Keep yank when pasting" })
 
 -- window navigation
@@ -74,6 +80,8 @@ local on_mac = vim.fn.has("mac") == 1
 -- Windows specific
 if on_windows then
 	vim.opt.shell = "pwsh"
+	vim.opt.shellcmdflag = "-nologo -noprofile -ExecutionPolicy RemoteSigned -command"
+	vim.opt.shellxquote = ""
 
 	vim.keymap.set("n", "<M-j>", "<cmd>move +1<CR>", { desc = "Move line up" })
 	vim.keymap.set("n", "<M-k>", "<cmd>move -2<CR>", { desc = "Move line down" })
@@ -434,6 +442,11 @@ require("lazy").setup({
 			vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
 			vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "[S]earch [R]esume" })
 			vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
+			vim.keymap.set("n", "<leader>sm", function()
+				builtin.lsp_document_symbols({
+					symbols = { "Function", "Method" },
+				})
+			end, { desc = "[S]earch [M]ethods in Document" })
 			vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
 
 			-- diagnostics
@@ -474,7 +487,7 @@ require("lazy").setup({
 			{ "williamboman/mason.nvim" },
 			{ "williamboman/mason-lspconfig.nvim" },
 			{ "WhoIsSethDaniel/mason-tool-installer.nvim" },
-			{ "j-hui/fidget.nvim", opts = {} }, -- status updates
+			{ "j-hui/fidget.nvim" }, -- status updates
 			{
 				"folke/lazydev.nvim",
 				ft = "lua", -- only load on lua files
@@ -956,11 +969,12 @@ require("lazy").setup({
 			local dap_mason = require("mason-nvim-dap")
 
 			dap_mason.setup({
-				automatic_setup = true, -- Best effort
+				-- automatic_setup = true, -- Best effort
 				handlers = {},
-				-- ensure_installed = { "codelldb" },
+				ensure_installed = { "codelldb" },
+				automatic_installation = true,
 			})
-			dapui.setup({})
+			dapui.setup()
 
 			-- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
 			dap.listeners.after.event_initialized["dapui_config"] = dapui.open
@@ -1051,14 +1065,6 @@ require("lazy").setup({
 		lazy = true,
 		ft = { "cs" },
 		config = function()
-			vim.lsp.config("roslyn", {
-				cmd = {
-					"C:/Users/chan/AppData/Local/nvim-data/mason/bin/roslyn.cmd",
-					"--logLevel=Information",
-					"--extensionLogDirectory=C:/Users/chan/AppData/Local/nvim-data",
-					"--stdio",
-				},
-			})
 			vim.api.nvim_create_autocmd("BufNewFile", {
 				group = vim.api.nvim_create_augroup("RoslynRestartOnCSharp", { clear = true }),
 				pattern = "*.cs", -- trigger only for C# files
