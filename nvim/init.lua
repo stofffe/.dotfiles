@@ -53,8 +53,10 @@ vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "Toggle fil
 vim.keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 vim.keymap.set("i", "<C-h>", "<Left>", { desc = "Move left in insert mode" })
 vim.keymap.set("i", "<C-l>", "<Right>", { desc = "Move right in insert mode" })
--- vim.keymap.set({ "n", "i" }, "<C-q>", "@q", { desc = "Execute default macro @q" })
---vim.keymap.set("x", "p", [['_dP]], { desc = "Keep yank when pasting" })
+
+
+-- run selecetd lua
+vim.keymap.set("v", "<leader>l", ":'<,'>lua<cr>", { desc = "Run selection in Lua" })
 
 -- window navigation
 vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
@@ -477,6 +479,10 @@ require("lazy").setup({
 			vim.keymap.set("n", "<leader>sn", function()
 				builtin.find_files({ cwd = vim.fn.stdpath("config") })
 			end, { desc = "[S]earch [N]eovim files" })
+
+			vim.api.nvim_set_hl(0, "TelescopePreviewTitle", { link = "TelescopeTitle" })
+			vim.api.nvim_set_hl(0, "TelescopeResultsTitle", { link = "TelescopeTitle" })
+			vim.api.nvim_set_hl(0, "TelescopePromptTitle", { link = "TelescopeTitle" })
 		end,
 	},
 
@@ -1122,5 +1128,26 @@ require("lazy").setup({
 		"p00f/clangd_extensions.nvim",
 		ft = { "c", "cpp" },
 		lazy = true,
+	},
+
+	{
+		"folke/snacks.nvim",
+		config = function()
+			require("snacks").setup({
+				input = {
+					win = {
+						-- taken from the commented line from input docs.
+						relative = "cursor",
+						row = -3,
+						col = 0,
+						winhighlight = "",
+						title_pos = "left",
+					},
+				},
+			})
+
+			vim.api.nvim_set_hl(0, "SnacksInputTitle", { link = "TelescopeBorder" })
+			vim.api.nvim_set_hl(0, "SnacksInputBorder", { link = "TelescopeBorder" })
+		end,
 	},
 })
