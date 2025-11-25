@@ -963,6 +963,8 @@ require("lazy").setup({
 			"nvim-neotest/nvim-nio",
 			"williamboman/mason.nvim",
 			"jay-babu/mason-nvim-dap.nvim",
+			"igorlfs/nvim-dap-view",
+			"Weissle/persistent-breakpoints.nvim",
 
 			-- Custom debuggers
 			"leoluz/nvim-dap-go",
@@ -970,36 +972,63 @@ require("lazy").setup({
 		-- cmd = { "DapContinue", "DapToggleBreakpoint", "DapStepOver", "DapStepInto", "DapStepOut" },
 		config = function()
 			local dap = require("dap")
-			local dapui = require("dapui")
+			local dap_widgets = require("dap.ui.widgets")
+			local dap_view = require("dap-view")
 			local dap_mason = require("mason-nvim-dap")
+
+			dap_view.setup({
+				auto_toggle = true,
+				winbar = {
+					default_section = "scopes",
+				},
+				windows = {
+					position = "below",
+					height = 0.5,
+					terminal = {
+						position = "right",
+						width = 0.3,
+					},
+				},
+			})
 
 			dap_mason.setup({
 				-- automatic_setup = true, -- Best effort
 				handlers = {},
-				ensure_installed = { "codelldb" },
+				ensure_installed = { "codelldb", "netcoredbg" },
 				automatic_installation = true,
 			})
-			dapui.setup()
-
-			-- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
-			dap.listeners.after.event_initialized["dapui_config"] = dapui.open
-			dap.listeners.before.event_terminated["dapui_config"] = dapui.close
-			dap.listeners.before.event_exited["dapui_config"] = dapui.close
 
 			-- keymaps
-			vim.keymap.set("n", "<F1>", dap.step_into, { desc = "Debug: Step Into" })
-			vim.keymap.set("n", "<F2>", dap.step_over, { desc = "Debug: Step Over" })
-			vim.keymap.set("n", "<F3>", dap.step_out, { desc = "Debug: Step Out" })
-			vim.keymap.set("n", "<F4>", dap.step_back, { desc = "Debug: Step Back" })
+			vim.keymap.set("n", "<F10>", dap.step_over, { desc = "Debug: Step Over" })
+			vim.keymap.set("n", "<F11>", dap.step_into, { desc = "Debug: Step Into" })
+			vim.keymap.set("n", "<S-F11>", dap.step_out, { desc = "Debug: Step Out" })
+			vim.keymap.set("n", "<F12>", dap.step_back, { desc = "Debug: Step Back" })
 			vim.keymap.set("n", "<F5>", dap.continue, { desc = "Debug: Start/Continue" })
-			vim.keymap.set("n", "<F7>", dapui.toggle, { desc = "Debug: See last session result." })
-			vim.keymap.set("n", "<leader>dk", function()
-				dapui.eval(nil, { enter = true })
-			end, { desc = "Evaluate work under cursor" })
-			vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint, { desc = "Debug: Toggle Breakpoint" })
-			vim.keymap.set("n", "<leader>B", function()
-				dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
-			end, { desc = "Debug: Set Breakpoint with condition" })
+			vim.keymap.set("n", "<F6>", dap.run_to_cursor, { desc = "Debug: Start/Continue" })
+			vim.keymap.set("n", "<S-F5>", dap.terminate, { desc = "Debug: Terminate" })
+			vim.keymap.set("n", "<leader>dk", dap_widgets.hover, { desc = "Evaluate work under cursor" })
+
+			local dap_persistent = require("persistent-breakpoints")
+			local dap_persistent_api = require("persistent-breakpoints.api")
+			dap_persistent.setup({
+				load_breakpoints_event = { "BufReadPost" },
+			})
+			vim.keymap.set(
+				"n",
+				"<leader>b",
+				dap_persistent_api.toggle_breakpoint,
+				{ desc = "Debug: Toggle Breakpoint" }
+			)
+			vim.keymap.set(
+				"n",
+				"<leader>B",
+				dap_persistent_api.set_conditional_breakpoint,
+				{ desc = "Debug: Toggle Breakpoint" }
+			)
+			-- vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint, { desc = "Debug: Toggle Breakpoint" })
+			-- vim.keymap.set("n", "<leader>B", function()
+			-- 	dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
+			-- end, { desc = "Debug: Set Breakpoint with condition" })
 			-- vim.fn.sign_define("DapBreakpoint", { text = "●", texthl = "DapBreakpoint", linehl = "", numhl = "" })
 			vim.fn.sign_define("DapBreakpoint", { text = "🔴", texthl = "DapBreakpoint", linehl = "", numhl = "" })
 
@@ -1010,7 +1039,7 @@ require("lazy").setup({
 
 			dap.adapters.executable = {
 				type = "executable",
-				command = vim.fn.stdpath("data") .. "/mason/bin/codelldb",
+				command = "codelldb",
 				name = "lldb1",
 				host = "127.0.0.1",
 				port = 13000,
@@ -1021,7 +1050,7 @@ require("lazy").setup({
 				type = "server",
 				port = "${port}",
 				executable = {
-					command = vim.fn.stdpath("data") .. "/mason/bin/codelldb",
+					command = "codelldb",
 					args = { "--port", "${port}" },
 				},
 			}
