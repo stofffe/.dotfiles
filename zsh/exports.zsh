@@ -28,3 +28,6 @@ export BAT_THEME="TwoDark"
 
 # aseprite
 export PATH="$PATH:$HOME/Library/Application Support/Steam/steamapps/common/Aseprite/Aseprite.app/Contents/MacOS"
+
+# nvim
+export PATH="$PATH:$HOME/.local/share/nvim/mason/bin"
