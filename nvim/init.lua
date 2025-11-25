@@ -54,7 +54,6 @@ vim.keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 vim.keymap.set("i", "<C-h>", "<Left>", { desc = "Move left in insert mode" })
 vim.keymap.set("i", "<C-l>", "<Right>", { desc = "Move right in insert mode" })
 
-
 -- run selecetd lua
 vim.keymap.set("v", "<leader>l", ":'<,'>lua<cr>", { desc = "Run selection in Lua" })
 
@@ -1066,18 +1065,19 @@ require("lazy").setup({
 	},
 
 	{
-		"seblyng/roslyn.nvim",
-		dependencies = { "williamboman/mason.nvim" },
-		lazy = true,
-		ft = { "cs" },
+		"GustavEikaas/easy-dotnet.nvim",
+		dependencies = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim", "mfussenegger/nvim-dap" },
 		config = function()
-			vim.api.nvim_create_autocmd("BufNewFile", {
-				group = vim.api.nvim_create_augroup("RoslynRestartOnCSharp", { clear = true }),
-				pattern = "*.cs", -- trigger only for C# files
-				callback = function()
-					vim.cmd("Roslyn restart")
-				end,
+			require("easy-dotnet").setup({
+				debugger = {
+					bin_path = "netcoredbg",
+				},
 			})
+			require("easy-dotnet.netcoredbg").register_dap_variables_viewer()
+
+			vim.keymap.set("n", "<leader>dk", function()
+				require("dap.ui.widgets").hover()
+			end, { desc = "Evaluate work under cursor" })
 		end,
 	},
 
