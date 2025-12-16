@@ -1,0 +1,29 @@
+# exports 
+$env:XDG_CONFIG_HOME = "$env:USERPROFILE\.config"
+# $env:Path = "C:\Program Files\LLVM\bin;$env:Path"
+
+# aliases
+function ff {
+    $dirs = fd --type directory --hidden `
+        --search-path="$HOME\dev" `
+        --search-path="C:\Program Files\Carmenta\Carmenta Engine 5 SDK/include" `
+        --search-path="C:\Program Files\Carmenta\Carmenta Engine 5 SDK/samples" `
+        --search-path="$HOME\.dotfiles" | fzf
+
+    if ($dirs) {
+        Set-Location $dirs
+    }
+}
+
+function ffc {
+    $dirs = fd --hidden `
+        --search-path="C:\Program Files\Carmenta\Carmenta Engine 5 SDK/include" `
+        --search-path="C:\Program Files\Carmenta\Carmenta Engine 5 SDK/samples" | fzf
+
+    if ($dirs) {
+        nvim $dirs
+    }
+}
+
+# modules
+Import-Module posh-git
