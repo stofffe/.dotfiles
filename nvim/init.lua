@@ -75,6 +75,37 @@ vim.keymap.set("n", "<leader>co", "<cmd>copen<cr>", {})
 vim.keymap.set("n", "<leader>cc", "<cmd>cexpr []<cr><cmd>cclose<cr>", {})
 vim.keymap.set("n", "<leader>cd", ":cdo", {})
 
+-- vim.keymap.set("n", "du", "d/[A-Z]\r", { noremap = true, silent = true })
+-- vim.keymap.set("n", "du", "d/_\r", { noremap = true, silent = true })
+
+function filter_qflist(type)
+	local qf = vim.fn.getqflist()
+	local filtered = {}
+
+	for _, item in ipairs(qf) do
+		if item.type == type then
+			table.insert(filtered, item)
+		end
+	end
+
+	vim.fn.setqflist(filtered, "r")
+end
+
+vim.keymap.set("n", "<leader>cfe", function()
+	filter_qflist("e")
+end, {})
+vim.keymap.set("n", "<leader>cfw", function()
+	filter_qflist("w")
+end, {})
+vim.keymap.set("n", "<leader>cfi", function()
+	filter_qflist("i")
+end, {})
+
+-- -- Delete until next underscore "_"
+vim.keymap.set("n", "d_", function()
+	vim.api.nvim_feedkeys("d/_\r", "n", false)
+end, { noremap = true, silent = true })
+
 local on_windows = vim.fn.has("win32") == 1
 local on_mac = vim.fn.has("mac") == 1
 
@@ -130,21 +161,27 @@ local open_native = function(path)
 	end
 end
 
-local open_visual_studio = function(path)
-	local vs_path = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\Common7\\IDE\\devenv.exe"
+local open_visual_studio = function(path, version)
+	local cmd_path = "C:\\Program Files\\Microsoft Visual Studio\\"
+		.. version
+		.. "\\Professional\\Common7\\IDE\\devenv.exe"
+
 	local command = {
-		vs_path,
+		cmd_path,
 		"/Edit",
 		path,
 	}
+
 	vim.fn.jobstart(command, { detach = true })
 end
 
 local open_file = function(path)
 	local ext = path:match("^.+(%..+)$") -- get the file extension, e.g., ".cs" or ".xaml"
 
+	print("PATH " .. path)
+
 	if ext == ".xaml" then
-		open_visual_studio(path)
+		open_visual_studio(path, "18")
 	else
 		open_native(path)
 	end
@@ -154,6 +191,11 @@ vim.keymap.set("n", "<leader>o", function()
 	local path = vim.fn.expand("%:p") -- full path of current file
 	open_file(path)
 end, { desc = "[O]pen current natively" })
+
+-- vim.keymap.set("n", "<leader>i", function()
+-- 	local path = vim.fn.expand("%:p") -- full path of current file
+-- 	open_visual_studio_sln(path)
+-- end, { desc = "[O]pen current natively" })
 
 -- Toggle between two suffixes in the current buffer
 local function toggle_suffix(suffix_a, suffix_b)
@@ -191,8 +233,38 @@ local function setup_toggle_file_keymap(suffix_a, suffix_b, key)
 end
 
 -- Example usage for XAML and XAML.CS
-setup_toggle_file_keymap(".xaml", ".xaml.cs", "<leader>h")
+-- setup_toggle_file_keymap(".xaml", ".xaml.cs", "<leader>h")
+setup_toggle_file_keymap(".xaml", "Model.cs", "<leader>h")
 setup_toggle_file_keymap(".templ", "_templ.go", "<leader>h")
+
+vim.api.nvim_create_autocmd("BufEnter", {
+	pattern = { "*View.xaml", "*ViewModel.cs" },
+	callback = function()
+		vim.keymap.set("n", "<leader>h", function()
+			local file = vim.fn.expand("%:p") -- full path
+			local target = nil
+
+			if file:match("View.xaml") then
+				-- suffix_a -> suffix_b
+				target = file:gsub("View", "ViewModel")
+				target = target:gsub("%.xaml", ".cs")
+			elseif file:match("ViewModel.cs") then
+				-- suffix_b -> suffix_a
+				target = file:gsub("ViewModel", "View")
+				target = target:gsub("%.cs$", ".xaml")
+			else
+				vim.notify("Not a View.xaml or ViewModel.cs file", vim.log.levels.WARN)
+				return
+			end
+
+			if vim.fn.filereadable(target) == 1 then
+				vim.cmd("edit " .. target)
+			else
+				vim.notify("No matching file found: " .. target, vim.log.levels.WARN)
+			end
+		end, { buffer = true, desc = "Toggle between View.xaml and ViewModel.cs", silent = true })
+	end,
+})
 
 --
 -- Terminal
@@ -301,6 +373,8 @@ vim.diagnostic.config({
 	},
 })
 
+vim.api.nvim_set_hl(0, "DiagnosticSignInfo", { fg = "#00aaff", bg = "NONE" })
+
 -- Install Lazy plugin manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -349,9 +423,9 @@ require("lazy").setup({
 
 			vim.keymap.set(
 				"n",
-				"<leader>gw",
+				"<leader>gws",
 				require("telescope").extensions.git_worktree.git_worktrees,
-				{ desc = "[G]it [W]orktrees [S]withc" }
+				{ desc = "[G]it [W]orktrees [S]witch" }
 			)
 			vim.keymap.set(
 				"n",
@@ -429,9 +503,12 @@ require("lazy").setup({
 			if not pcall(require("telescope").load_extension, "ui-select") then
 				print("failed to load ui-select")
 			end
-			if not pcall(require("telescope").load_extension, "git_worktree") then
-				print("failed to load git_worktree")
-			end
+			-- if not pcall(require("telescope").load_extension, "git_worktree") then
+			-- 	print("failed to load git_worktree")
+			-- end
+			-- if not pcall(require("telescope").load_extension, "worktrees") then
+			-- 	print("failed to load git_worktree")
+			-- end
 
 			-- See `:help telescope.builtin`
 			local builtin = require("telescope.builtin")
@@ -719,37 +796,37 @@ require("lazy").setup({
 			{ "hrsh7th/cmp-nvim-lsp-signature-help" },
 			{ "hrsh7th/cmp-path" },
 		},
+
 		config = function()
 			local cmp = require("cmp")
 			local luasnip = require("luasnip")
 			luasnip.config.setup({})
-
 			local kind_icons = {
-				Text = "",
-				Method = "m",
-				Function = "",
-				Constructor = "",
-				Field = "",
-				Variable = "",
-				Class = "",
+				Text = "󰉿",
+				Method = "󰆧",
+				Function = "󰊕",
+				Constructor = "",
+				Field = "󰜢",
+				Variable = "󰫧",
+				Class = "󰠱",
 				Interface = "",
 				Module = "",
-				Property = "",
+				Property = "󰜢",
 				Unit = "",
-				Value = "",
+				Value = "󰎠",
 				Enum = "",
-				Keyword = "",
-				Snippet = "",
-				Color = "",
-				File = "",
-				Reference = "",
-				Folder = "",
+				Keyword = "󰌋",
+				Snippet = "",
+				Color = "󰏘",
+				File = "󰈙",
+				Reference = "󰈇",
+				Folder = "󰉋",
 				EnumMember = "",
-				Constant = "",
-				Struct = "",
+				Constant = "󰏿",
+				Struct = "󰙅",
 				Event = "",
-				Operator = "",
-				TypeParameter = "",
+				Operator = "󰆕",
+				TypeParameter = "󰊄",
 			}
 
 			cmp.setup({
@@ -764,7 +841,7 @@ require("lazy").setup({
 					["<C-k>"] = cmp.mapping.select_prev_item(), -- Select the [p]revious item
 
 					["<CR>"] = cmp.mapping.confirm({ select = true }),
-					-- ["<Tab>"] = cmp.mapping.confirm({ select = true }),
+					["<Tab>"] = cmp.mapping.confirm({ select = true }),
 					["<C-s>"] = cmp.mapping.complete(),
 					["<C-d>"] = cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() }),
 
@@ -790,7 +867,6 @@ require("lazy").setup({
 					format = function(entry, vim_item)
 						-- Kind icons
 						vim_item.kind = string.format("%s", kind_icons[vim_item.kind])
-						-- vim_item.kind = string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind) -- This concatonates the icons with the name of the item kind
 						vim_item.menu = ({
 							nvim_lsp = "[LSP]",
 							nvim_lsp_signature_help = "[SIGNATURE]",
@@ -808,14 +884,14 @@ require("lazy").setup({
 					{ name = "buffer" },
 					{ name = "path" },
 				},
-				window = {
-					documentation = {
-						border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
-					},
-					completion = {
-						border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
-					},
-				},
+				-- window = {
+				-- 	documentation = {
+				-- 		border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+				-- 	},
+				-- 	completion = {
+				-- 		border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+				-- 	},
+				-- },
 			})
 		end,
 	},
@@ -983,7 +1059,7 @@ require("lazy").setup({
 				},
 				windows = {
 					position = "below",
-					height = 0.5,
+					height = 0.4,
 					terminal = {
 						position = "right",
 						width = 0.3,
@@ -1000,9 +1076,9 @@ require("lazy").setup({
 
 			-- keymaps
 			vim.keymap.set("n", "<F10>", dap.step_over, { desc = "Debug: Step Over" })
-			vim.keymap.set("n", "<F11>", dap.step_into, { desc = "Debug: Step Into" })
-			vim.keymap.set("n", "<S-F11>", dap.step_out, { desc = "Debug: Step Out" })
-			vim.keymap.set("n", "<F12>", dap.step_back, { desc = "Debug: Step Back" })
+			vim.keymap.set("n", "<F12>", dap.step_into, { desc = "Debug: Step Into" })
+			vim.keymap.set("n", "<S-F12>", dap.step_out, { desc = "Debug: Step Out" })
+			-- vim.keymap.set("n", "<F12>", dap.step_back, { desc = "Debug: Step Back" })
 			vim.keymap.set("n", "<F5>", dap.continue, { desc = "Debug: Start/Continue" })
 			vim.keymap.set("n", "<F6>", dap.run_to_cursor, { desc = "Debug: Start/Continue" })
 			vim.keymap.set("n", "<S-F5>", dap.terminate, { desc = "Debug: Terminate" })
@@ -1098,11 +1174,13 @@ require("lazy").setup({
 		dependencies = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim", "mfussenegger/nvim-dap" },
 		config = function()
 			require("easy-dotnet").setup({
-				debugger = {
-					bin_path = "netcoredbg",
+				lsp = {
+					auto_refresh_codelens = false,
 				},
+				-- debugger = {
+				-- 	bin_path = "netcoredbg",
+				-- },
 			})
-			require("easy-dotnet.netcoredbg").register_dap_variables_viewer()
 
 			vim.keymap.set("n", "<leader>dk", function()
 				require("dap.ui.widgets").hover()
@@ -1173,7 +1251,43 @@ require("lazy").setup({
 						title_pos = "left",
 					},
 				},
+				picker = {
+					enabled = true,
+					-- sources = {ini
+					-- explorer = {
+					-- 	auto_close = true,
+					-- 	win = {
+					-- 		list = {
+					-- 			keys = {
+					-- 				["<leader>o"] = function(a, b)
+					-- 					print(vim.inspect(a.file))
+					--
+					-- 					-- local node = state.tree:get_node()
+					-- 					-- if not node then
+					-- 					-- 	return
+					-- 					-- end
+					-- 					-- local path = node:get_id()
+					-- 					--
+					-- 					-- open_file(path)
+					-- 				end,
+					-- 			},
+					-- 		},
+					-- 	},
+					-- },
+					-- },
+				},
+				-- explorer = {
+				-- 	enabled = true,
+				-- 	replace_netrw = true,
 			})
+
+			-- vim.keymap.set("n", "<leader>e", function()
+			-- 	Snacks.explorer()
+			-- end, { desc = "Toggle file explorer" }) -- Refresh and toggle
+			--
+			-- vim.keymap.set("n", "<leader>t", function()
+			-- 	Snacks.terminal.toggle()
+			-- end, { desc = "Toggle file explorer" }) -- Refresh and toggle
 
 			vim.api.nvim_set_hl(0, "SnacksInputTitle", { link = "TelescopeBorder" })
 			vim.api.nvim_set_hl(0, "SnacksInputBorder", { link = "TelescopeBorder" })
