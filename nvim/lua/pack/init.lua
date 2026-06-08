@@ -7,12 +7,13 @@ vim.pack.add({
 	-- { src = "https://github.com/mrcjkb/rustaceanvim" },
 	-- { src = "https://github.com/simrat39/rust-tools.nvim" },
 
-	{ src = "https://github.com/saadparwaiz1/cmp_luasnip" },
 	{ src = "https://github.com/hrsh7th/nvim-cmp" },
 	{ src = "https://github.com/hrsh7th/cmp-nvim-lsp" },
 	{ src = "https://github.com/hrsh7th/cmp-nvim-lsp-signature-help" },
 	{ src = "https://github.com/hrsh7th/cmp-path" },
+	{ src = "https://github.com/saadparwaiz1/cmp_luasnip" },
 	{ src = "https://github.com/L3MON4D3/LuaSnip" },
+	{ src = "https://github.com/rafamadriz/friendly-snippets" },
 
 	{ src = "https://github.com/mfussenegger/nvim-dap" },
 	{ src = "https://github.com/jay-babu/mason-nvim-dap.nvim" },
