@@ -2,7 +2,7 @@
 alias nv=nvim
 alias ll="ls -lah"
 alias cl=clear
-
+alias lzg=lazygit
 # tmux
 alias tmn='f() { tmux new -s $1 };f'
 alias tma='f() { tmux attach -t $1 };f'

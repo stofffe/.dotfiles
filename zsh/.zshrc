@@ -10,6 +10,8 @@ export CLICOLOR=1
 export LSCOLORS=ExGxBxDxCxEgEdxbxgxcxd
 
 # Basic auto/tab complete:
+fpath+=~/.zfunc
+
 autoload -U compinit
 zstyle ':completion:*' menu select
 zstyle ':completion:*:default' list-colors "di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43" # Mine
@@ -31,6 +33,7 @@ source ~/.dotfiles/zsh/powerlevel10k/powerlevel10k.zsh-theme
 source ~/.dotfiles/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.dotfiles/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
+
 # Redirect ruby
 if [ -d "/opt/homebrew/opt/ruby/bin" ]; then
   export PATH=/opt/homebrew/opt/ruby/bin:$PATH
@@ -39,4 +42,3 @@ fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-

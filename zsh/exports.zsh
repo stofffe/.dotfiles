@@ -15,6 +15,10 @@ export GOBIN=$GOPATH/bin
 
 # Rust
 export PATH=$PATH:$HOME/.cargo/bin
+export PATH=$PATH:$HOME/.rustup/toolchains/stable-aarch64-apple-darwin/bin
+# export PATH=$PATH:$HOME/.rustup/toolchains/stable-aarch64-apple-darwin/bin
+
+export PATH=$PATH:/opt/homebrew/opt/llvm/bin
 
 # Odin
 export PATH=$PATH:$HOME/Odin
@@ -31,3 +35,6 @@ export PATH="$PATH:$HOME/Library/Application Support/Steam/steamapps/common/Asep
 
 # nvim
 export PATH="$PATH:$HOME/.local/share/nvim/mason/bin"
+
+# dotnet
+export PATH="$PATH:$HOME/.dotnet/tools"
