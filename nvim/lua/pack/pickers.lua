@@ -39,19 +39,8 @@ telescope.setup({
 
 -- Extensions
 
-telescope.load_extension("fzf")
+-- telescope.load_extension("fzf")
 telescope.load_extension("frecency")
-
-vim.api.nvim_create_autocmd("PackChanged", {
-	callback = function(ev)
-		local name, kind = ev.data.spec.name, ev.data.kind
-		print(name)
-
-		if name == "telescope-fzf-native.nvim" then
-			vim.system({ "make" }, { cwd = ev.data.path })
-		end
-	end,
-})
 
 local builtin = require("telescope.builtin")
 vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })

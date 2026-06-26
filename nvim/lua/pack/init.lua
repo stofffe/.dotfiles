@@ -29,7 +29,7 @@ vim.pack.add({
 	{ src = "https://github.com/dchinmay2/clangd_extensions.nvim" },
 
 	{ src = "https://github.com/nvim-telescope/telescope.nvim" },
-	{ src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim" },
+	-- { src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim" },
 	{ src = "https://github.com/nvim-telescope/telescope-frecency.nvim" },
 
 	{ src = "https://github.com/j-hui/fidget.nvim" },
