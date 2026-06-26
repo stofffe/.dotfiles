@@ -1,5 +1,29 @@
 local platform = require("platform")
 
+-- Get unsaved buffers
+
+local function unsaved_to_qflist()
+	local items = {}
+
+	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+		if vim.api.nvim_buf_get_option(buf, "modified") then
+			local name = vim.api.nvim_buf_get_name(buf)
+			if name ~= "" then
+				table.insert(items, {
+					filename = name,
+					lnum = 1,
+					col = 1,
+					text = "Unsaved changes",
+				})
+			end
+		end
+	end
+
+	vim.fn.setqflist(items, "r")
+	vim.cmd("copen")
+end
+vim.api.nvim_create_user_command("GetUnsavedFiles", unsaved_to_qflist, {})
+
 -- Open current file
 
 vim.keymap.set("n", "<leader>o", function()
