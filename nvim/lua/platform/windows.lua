@@ -9,6 +9,7 @@ vim.pack.add({
 require("easy-dotnet").setup({
 	lsp = {
 		auto_refresh_codelens = false,
+		restart_roslyn_on_branch_change = true,
 	},
 })
 

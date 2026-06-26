@@ -4,9 +4,6 @@ vim.pack.add({
 	{ src = "https://github.com/mason-org/mason-lspconfig.nvim" },
 	{ src = "https://github.com/stevearc/conform.nvim" },
 
-	-- { src = "https://github.com/mrcjkb/rustaceanvim" },
-	-- { src = "https://github.com/simrat39/rust-tools.nvim" },
-
 	{ src = "https://github.com/hrsh7th/nvim-cmp" },
 	{ src = "https://github.com/hrsh7th/cmp-nvim-lsp" },
 	{ src = "https://github.com/hrsh7th/cmp-nvim-lsp-signature-help" },
@@ -24,7 +21,6 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter", branch = "main" },
 	{ src = "https://github.com/nvim-neo-tree/neo-tree.nvim", branch = "v3.x" },
 	{ src = "https://github.com/akinsho/toggleterm.nvim" },
-	{ src = "https://github.com/nvim-telescope/telescope.nvim" },
 	{ src = "https://github.com/mg979/vim-visual-multi" },
 	{ src = "https://github.com/folke/todo-comments.nvim" },
 	{ src = "https://github.com/lewis6991/gitsigns.nvim" },
@@ -32,17 +28,25 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
 	{ src = "https://github.com/dchinmay2/clangd_extensions.nvim" },
 
+	{ src = "https://github.com/nvim-telescope/telescope.nvim" },
+	{ src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim" },
+	{ src = "https://github.com/nvim-telescope/telescope-frecency.nvim" },
+
 	{ src = "https://github.com/j-hui/fidget.nvim" },
 	{ src = "https://github.com/nvim-lua/plenary.nvim" },
 	{ src = "https://github.com/nvim-tree/nvim-web-devicons" },
 	{ src = "https://github.com/MunifTanjim/nui.nvim" },
 	{ src = "https://github.com/nvim-mini/mini.nvim" },
 	{ src = "https://github.com/stevearc/dressing.nvim" },
+
+	{ src = "https://github.com/tpope/vim-dispatch" },
 })
 
 -- Colorscheme
 
 vim.cmd.colorscheme("darkplus")
+
+vim.keymap.set("n", "<leader>m", ":Make<cr>", { desc = "[M]ake async" })
 
 require("fidget").setup({})
 require("todo-comments").setup({})
