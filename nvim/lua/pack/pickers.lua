@@ -30,23 +30,36 @@ telescope.setup({
 			},
 		},
 	},
+	pickers = {
+		git_branches = {
+			opts = {
+				show_remote_tracking_branches = false,
+			},
+		},
+	},
+
 	extensions = {
-		frecency = {
-			matcher = "fuzzy",
+		-- frecency = {
+		-- 	matcher = "fuzzy",
+		-- },
+		["ui-select"] = {
+			require("telescope.themes").get_dropdown({
+				-- even more opts
+			}),
 		},
 	},
 })
 
 -- Extensions
 
--- telescope.load_extension("fzf")
-telescope.load_extension("frecency")
+-- telescope.load_extension("frecency")
+telescope.load_extension("ui-select")
 
 local builtin = require("telescope.builtin")
 vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
 vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
 vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "[S]earch [F]iles" })
-vim.keymap.set("n", "<leader>sl", telescope.extensions.frecency.frecency, { desc = "[S]earch [L]atest Files" })
+-- vim.keymap.set("n", "<leader>sl", telescope.extensions.frecency.frecency, { desc = "[S]earch [L]atest Files" })
 vim.keymap.set("n", "<leader>sb", builtin.builtin, { desc = "[S]earch Telescope [B]uiltin" })
 vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "[S]earch current [W]ord" })
 vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
