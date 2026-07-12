@@ -56,6 +56,10 @@
       "rev": "f247308e68dab9f1133759b05d944569ad054546",
       "src": "https://github.com/ThePrimeagen/git-worktree.nvim"
     },
+    "gitlab.nvim": {
+      "rev": "2295d1e85c5e4d79c49cadda36b9848a3ffed4e2",
+      "src": "https://github.com/harrisoncramer/gitlab.nvim"
+    },
     "gitsigns.nvim": {
       "rev": "25050e4ed39e628282831d4cbecb1850454ce915",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
@@ -119,6 +123,10 @@
     "nvim-web-devicons": {
       "rev": "dfbfaa967a6f7ec50789bead7ef87e336c1fa63c",
       "src": "https://github.com/nvim-tree/nvim-web-devicons"
+    },
+    "octo.nvim": {
+      "rev": "b9a73e167f851a98d8f29d62658d3640bb8a7314",
+      "src": "https://github.com/pwntester/octo.nvim"
     },
     "persistent-breakpoints.nvim": {
       "rev": "d1656221836207787b8a7969cc2dc72668c4742a",

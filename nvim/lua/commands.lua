@@ -100,3 +100,20 @@ vim.api.nvim_create_autocmd("BufEnter", {
 		end, { buffer = true, desc = "Toggle between View.xaml and ViewModel.cs", silent = true })
 	end,
 })
+
+-- Close floating windows
+
+local function close_floating_windows()
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		local config = vim.api.nvim_win_get_config(win)
+		if config.relative ~= "" then
+			vim.api.nvim_win_close(win, true)
+		end
+	end
+end
+
+vim.api.nvim_create_user_command(
+	"CloseFloatingWindows",
+	close_floating_windows,
+	{ desc = "Close all floating windows" }
+)

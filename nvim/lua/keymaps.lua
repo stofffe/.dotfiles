@@ -6,6 +6,15 @@ vim.keymap.set("x", "p", [["_dP]], { desc = "" })
 -- vim.keymap.set("n", "<leader>f", "<cmd>Format<cr>", { desc = "Format file" })
 -- vim.keymap.set("n", "<leader>v", "<cmd>vsplit<cr>", { desc = "Split window horizontally" })
 
+vim.keymap.set("n", "tn", vim.cmd.tabnext, { desc = "[T]ab [N]ext" })
+vim.keymap.set("n", "tc", vim.cmd.tabclose, { desc = "[T]ab [C]lose" })
+
+local wrap = false
+vim.keymap.set("n", "<leader>tw", function()
+	wrap = not wrap
+	vim.opt.wrap = wrap
+end, { desc = "[T]oggle [W]rap" })
+
 vim.keymap.set("i", "<C-j>", "<Down>", { desc = "Move left in insert mode" })
 vim.keymap.set("i", "<C-k>", "<Up>", { desc = "Move right in insert mode" })
 vim.keymap.set("i", "<C-h>", "<Left>", { desc = "Move left in insert mode" })
@@ -34,24 +43,31 @@ vim.keymap.set("n", "<Left>", "<cmd>vertical resize -2<cr>", { desc = "Increase 
 vim.keymap.set("n", "<Right>", "<cmd>vertical resize +2<cr>", { desc = "Decrease window size horizontally" })
 
 -- quickfix
-vim.keymap.set("n", "<leader>cn", "<cmd>cnext<cr>", { desc = "Quickfix: Go to next item" })
-vim.keymap.set("n", "<leader>cp", "<cmd>cprev<cr>", { desc = "Quickfix: Go to prev item" })
-vim.keymap.set("n", "<leader>co", "<cmd>copen<cr>", { desc = "Quickfix: Open" })
-vim.keymap.set("n", "<leader>cc", "<cmd>cexpr []<cr><cmd>cclose<cr>", { desc = "Quickfix: Clear and close" })
+vim.keymap.set("n", "<leader>fn", "<cmd>cnext<cr>", { desc = "Quick[F]ix [N]ext item" })
+vim.keymap.set("n", "<leader>fp", "<cmd>cprev<cr>", { desc = "Quick[F]ix [P]rev item" })
+vim.keymap.set("n", "<leader>fo", "<cmd>copen<cr>", { desc = "Quick[F]ix [O]pen" })
+vim.keymap.set("n", "<leader>fc", "<cmd>cclose<cr>", { desc = "Quick[F]ix: [C]lose" })
+vim.keymap.set("n", "<leader>fd", "<cmd>cexpr []<cr>", { desc = "Quick[F]ix: [D]elete" })
 
-function filter_qflist(type)
-    local qf = vim.fn.getqflist()
-    local filtered = {}
+local filter_qflist = function(type)
+	local qf = vim.fn.getqflist()
+	local filtered = {}
 
-    for _, item in ipairs(qf) do
-        if item.type == type then
-            table.insert(filtered, item)
-        end
-    end
+	for _, item in ipairs(qf) do
+		if item.type == type then
+			table.insert(filtered, item)
+		end
+	end
 
-    vim.fn.setqflist(filtered, "r")
+	vim.fn.setqflist(filtered, "r")
 end
 
-vim.keymap.set("n", "<leader>cfe", function() filter_qflist("e") end, { desc = "Quickfix: Filter errors" })
-vim.keymap.set("n", "<leader>cfw", function() filter_qflist("w") end, { desc = "Quickfix: Filter warnings" })
-vim.keymap.set("n", "<leader>cfi", function() filter_qflist("i") end, { desc = "Quickfix: Filter infos" })
+vim.keymap.set("n", "<leader>ffe", function()
+	filter_qflist("e")
+end, { desc = "Quick[F]ix [F]ilter [E]rrors" })
+vim.keymap.set("n", "<leader>ffw", function()
+	filter_qflist("w")
+end, { desc = "Quick[F]ix [F]ilter [W]arnings" })
+vim.keymap.set("n", "<leader>ffi", function()
+	filter_qflist("i")
+end, { desc = "Quick[F]ix [F]ilter [I]nfos" })

@@ -1,4 +1,10 @@
-require("gitsigns").setup({
+--
+-- gitsigns
+--
+
+local gitsigns = require("gitsigns")
+gitsigns.setup({
+
 	signs = {
 		add = { text = "+" },
 		change = { text = "~" },
@@ -8,7 +14,17 @@ require("gitsigns").setup({
 	},
 })
 
+vim.keymap.set("n", "<leader>gb", gitsigns.blame_line, { desc = "[G]itsigns blame line" })
+
+--
+-- diffview
+--
+
 require("diffview").setup({})
+
+--
+-- neogit
+--
 
 local neogit = require("neogit")
 
@@ -37,6 +53,30 @@ vim.api.nvim_set_hl(0, "NeogitDiffContextCursor", { link = "None" })
 
 vim.api.nvim_set_hl(0, "NeogitHunkHeaderHighlight", { link = "NeogitHunkHeader" })
 vim.api.nvim_set_hl(0, "NeogitHunkHeaderCursor", { link = "NeogitHunkHeader" })
+
+--
+-- gitlab
+--
+
+-- require("gitlab.server").build()
+local gitlab = require("gitlab")
+
+gitlab.setup({
+	popup = { -- The popup for comment creation, editing, and replying
+		width = "90%", -- Can be a percentage (string or decimal, "40%" = 0.4) of editor screen width, or an integer (number of columns)
+		height = "90%", -- Can be a percentage (string or decimal, "60%" = 0.6) of editor screen width, or an integer (number of rows)
+		position = "50%", -- Position (from the top left corner), either a number or percentage string that applies to both horizontal and vertical position, or a table that specifies them separately, e.g., { row = "90%", col = "100%" } places popups in the bottom right corner while leaving the status line visible
+	},
+	keymaps = {
+		discussion_tree = {
+			toggle_node = "<tab>",
+		},
+	},
+})
+
+local gitlab = require("gitlab")
+vim.keymap.set("n", "<leader>gm", gitlab.choose_merge_request, { desc = "[G]it [R]eview" })
+vim.keymap.set("n", "<leader>gr", gitlab.review, { desc = "[G]it [R]eview" })
 
 --
 -- Worktrees
@@ -74,6 +114,19 @@ local worktree_picker = function(title, get_lines, parse_line)
 		:find()
 end
 
+local switch_to_worktree_and_clear_buffers = function(path)
+	vim.cmd("cd " .. vim.fn.fnameescape(path))
+
+	-- clear buffers, current win and jump list
+	vim.cmd("%bd!")
+
+	local current_win = vim.api.nvim_get_current_win()
+	local empty_buffer = vim.api.nvim_create_buf(true, false)
+	vim.api.nvim_win_set_buf(current_win, empty_buffer)
+
+	vim.cmd.clearjumps()
+end
+
 local worktree_add = function()
 	local get_lines = function()
 		local lines = vim.fn.systemlist("git for-each-ref --format='%(refname:short)' refs/remotes")
@@ -96,6 +149,8 @@ local worktree_add = function()
 	local parse_line = function(line)
 		local branch = line:gsub("^origin/", "")
 
+		-- create worktree
+
 		local cwd = vim.fn.getcwd()
 		local path = vim.fs.normalize(cwd .. "/.." .. "/" .. branch)
 		print("path " .. path)
@@ -113,6 +168,9 @@ local worktree_add = function()
 		vim.fn.system(cmd)
 
 		print("Created branch: " .. branch .. " at path: " .. path)
+
+		-- switch worktree
+		switch_to_worktree_and_clear_buffers(path)
 	end
 
 	worktree_picker("Add Worktree", get_lines, parse_line)
@@ -143,17 +201,7 @@ local worktree_switch = function()
 		local _, path = line:match("^(.-)%s+(.-)$")
 
 		if path then
-			vim.cmd("cd " .. vim.fn.fnameescape(path))
-
-			-- clear buffers, current win and jump list
-			vim.cmd("%bd!")
-
-			local current_win = vim.api.nvim_get_current_win()
-			local empty_buffer = vim.api.nvim_create_buf(true, false)
-			vim.api.nvim_win_set_buf(current_win, empty_buffer)
-
-			vim.cmd.clearjumps()
-
+			switch_to_worktree_and_clear_buffers(path)
 			print("Switched cwd to: " .. path)
 		else
 			print("Could not parse worktree path")

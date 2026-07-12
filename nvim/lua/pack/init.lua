@@ -30,6 +30,7 @@ vim.pack.add({
 	{ src = "https://github.com/lewis6991/gitsigns.nvim" },
 	{ src = "https://github.com/neogitorg/neogit" },
 	{ src = "https://github.com/sindrets/diffview.nvim" },
+	{ src = "https://github.com/harrisoncramer/gitlab.nvim" },
 
 	-- random
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter", branch = "main" },
