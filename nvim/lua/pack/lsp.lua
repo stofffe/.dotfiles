@@ -34,8 +34,8 @@ vim.api.nvim_set_hl(0, "DiagnosticSignInfo", { fg = "#00aaff", bg = "NONE" })
 -- LSP
 --
 
-vim.keymap.set("n", "<leader>f", vim.lsp.buf.format, { desc = "[F]ormat file" })
-vim.keymap.set("v", "<leader>f", function()
+vim.keymap.set("n", "<leader>lf", vim.lsp.buf.format, { desc = "[L]sp [F]ormat File" })
+vim.keymap.set("v", "<leader>lf", function()
 	local start_pos = vim.fn.getpos("'<")
 	local end_pos = vim.fn.getpos("'>")
 
@@ -45,15 +45,20 @@ vim.keymap.set("v", "<leader>f", function()
 			["end"] = { end_pos[2], end_pos[3] },
 		},
 	})
-end, { desc = "Format selection" })
-vim.keymap.set("n", "gd", require("telescope.builtin").lsp_definitions, { desc = "[G]oto [D]efinition" }) -- <C-t> to go back
-vim.keymap.set("n", "gr", require("telescope.builtin").lsp_references, { desc = "[G]oto [R]eferences" })
-vim.keymap.set("n", "gi", require("telescope.builtin").lsp_implementations, { desc = "[G]oto [I]mplementation" })
-vim.keymap.set("n", "gt", require("telescope.builtin").lsp_type_definitions, { desc = "[G]oto [T]ype Definition" })
+end, { desc = "[L]sp [F]ormat selection" })
+vim.keymap.set("n", "<leader>ld", require("telescope.builtin").lsp_definitions, { desc = "[L]sp [D]efinition" }) -- <C-t> to go back
+vim.keymap.set("n", "<leader>lr", require("telescope.builtin").lsp_references, { desc = "[L]sp [R]eferences" })
+vim.keymap.set("n", "<leader>li", require("telescope.builtin").lsp_implementations, { desc = "[L]sp [I]mplementation" })
+vim.keymap.set(
+	"n",
+	"<leader>lt",
+	require("telescope.builtin").lsp_type_definitions,
+	{ desc = "[L]sp [T]ype Definition" }
+)
 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "[R]e[n]ame" })
-vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, { desc = "Code [A]ction" })
+vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, { desc = "[L]sp Code [A]ction" })
 vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover Documentation" })
-vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "[G]oto [D]eclaration" }) -- ex: C header
+vim.keymap.set("n", "<leader>lD", vim.lsp.buf.declaration, { desc = "[L]sp [D]eclaration" }) -- ex: C header
 vim.keymap.set("n", "<leader>dl", vim.diagnostic.open_float, { desc = "[D]iagnostic [L]ine" })
 
 local configs = {
