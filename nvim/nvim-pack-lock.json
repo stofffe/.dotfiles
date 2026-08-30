@@ -4,6 +4,10 @@
       "rev": "0abc8f390b278c3b4aabc4c004ac8a088b65cf24",
       "src": "https://github.com/L3MON4D3/LuaSnip"
     },
+    "blink.cmp": {
+      "rev": "78336bc89ee5365633bcf754d93df01678b5c08f",
+      "src": "https://github.com/saghen/blink.cmp"
+    },
     "clangd_extensions.nvim": {
       "rev": "78c2ecd659d54972be17aa6ba2deac3c53223b80",
       "src": "https://github.com/dchinmay2/clangd_extensions.nvim"
@@ -52,6 +56,10 @@
       "rev": "6cd7280adead7f586db6fccbd15d2cac7e2188b9",
       "src": "https://github.com/rafamadriz/friendly-snippets"
     },
+    "fzf-lua": {
+      "rev": "b9919229c84bd64d8539367e67e32811cf39a836",
+      "src": "https://github.com/ibhagwan/fzf-lua"
+    },
     "git-worktree.nvim": {
       "rev": "f247308e68dab9f1133759b05d944569ad054546",
       "src": "https://github.com/ThePrimeagen/git-worktree.nvim"
@@ -75,6 +83,10 @@
     "mason-nvim-dap.nvim": {
       "rev": "9a10e096703966335bd5c46c8c875d5b0690dade",
       "src": "https://github.com/jay-babu/mason-nvim-dap.nvim"
+    },
+    "mason-tool-installer.nvim": {
+      "rev": "443f1ef8b5e6bf47045cb2217b6f748a223cf7dc",
+      "src": "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim"
     },
     "mason.nvim": {
       "rev": "16ba83bfc8a25f52bb545134f5bee082b195c460",
@@ -136,9 +148,21 @@
       "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
       "src": "https://github.com/nvim-lua/plenary.nvim"
     },
+    "rust-tools.nvim": {
+      "rev": "676187908a1ce35ffcd727c654ed68d851299d3e",
+      "src": "https://github.com/simrat39/rust-tools.nvim"
+    },
+    "rustaceanvim": {
+      "rev": "47d56f1d375dc8522085a18ca04a4dab71129cdc",
+      "src": "https://github.com/mrcjkb/rustaceanvim"
+    },
     "telescope-frecency.nvim": {
       "rev": "5479d8a269e30479280c59e44f805396127653e6",
       "src": "https://github.com/nvim-telescope/telescope-frecency.nvim"
+    },
+    "telescope-fzf-native.nvim": {
+      "rev": "b25b749b9db64d375d782094e2b9dce53ad53a40",
+      "src": "https://github.com/nvim-telescope/telescope-fzf-native.nvim"
     },
     "telescope-ui-select.nvim": {
       "rev": "6e51d7da30bd139a6950adf2a47fda6df9fa06d2",

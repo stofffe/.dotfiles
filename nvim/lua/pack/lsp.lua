@@ -73,16 +73,52 @@ local configs = {
 				check = {
 					allTargets = true,
 					command = "clippy",
-					overrideCommand = {
-						"cargo",
-						"clippy",
-						"--workspace",
-						"--message-format=json",
-						"--all-targets",
-					},
 				},
 			},
 		},
+		on_attach = function(_, bufnr)
+			local wasm_target = "wasm32-unknown-unknown"
+			local default_target = nil
+
+			local function set_rust_target(target)
+				-- needed since setting field to nil doesnt override
+				if not target then
+					target = "null"
+				end
+
+				vim.lsp.config("rust_analyzer", {
+					settings = {
+						["rust-analyzer"] = {
+							cargo = {
+								target = target,
+							},
+							check = {
+								allTargets = true,
+								command = "clippy",
+							},
+						},
+					},
+				})
+
+				for _, client in ipairs(vim.lsp.get_clients({ name = "rust_analyzer" })) do
+					client:stop(true)
+				end
+
+				vim.defer_fn(function()
+					vim.lsp.enable("rust_analyzer")
+				end, 100)
+			end
+
+			vim.api.nvim_create_user_command("RustWasmEnable", function()
+				set_rust_target(wasm_target)
+				vim.notify("Rust WASM target enabled")
+			end, {})
+
+			vim.api.nvim_create_user_command("RustWasmDisable", function()
+				set_rust_target(default_target)
+				vim.notify("Rust WASM target disabled")
+			end, {})
+		end,
 	},
 	clangd = {
 		on_attach = function(_, bufnr)
