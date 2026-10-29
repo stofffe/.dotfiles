@@ -14,7 +14,9 @@ gitsigns.setup({
 	},
 })
 
-vim.keymap.set("n", "<leader>gb", gitsigns.blame_line, { desc = "[G]itsigns blame line" })
+vim.keymap.set("n", "<leader>gbl", gitsigns.blame_line, { desc = "[G]itsigns [B]lame [L]ine" })
+vim.keymap.set("n", "<leader>gb", gitsigns.blame, { desc = "[G]itsigns [B]lame" })
+vim.keymap.set("n", "<leader>gd", gitsigns.preview_hunk_inline, { desc = "[G]itsigns preview hunk [D]iff" })
 
 --
 -- diffview
